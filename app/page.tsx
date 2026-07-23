@@ -200,6 +200,17 @@ function isLayoutMode(value: string | null): value is YihuaLayoutMode {
   return value === "auto" || value === "desktop" || value === "mobile";
 }
 
+function isShareCancellation(error: unknown) {
+  return error instanceof DOMException && error.name === "AbortError";
+}
+
+function triggerImageDownload(href: string, filename: string) {
+  const link = document.createElement("a");
+  link.href = href;
+  link.download = filename;
+  link.click();
+}
+
 const decodedPreviews = new Map<string, HTMLImageElement>();
 const previewRequests = new Map<string, Promise<void>>();
 const MAX_DECODED_PREVIEWS = 3;
@@ -296,8 +307,10 @@ export default function Home() {
   const [copyStatus, setCopyStatus] = useState<ActionStatus>("idle");
   const [saveStatus, setSaveStatus] = useState<ActionStatus>("idle");
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+  const [canShareImageFiles, setCanShareImageFiles] = useState(false);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const transitionSequence = useRef(0);
+  const shareFileRequests = useRef(new Map<string, Promise<File>>());
   const chart = CHARTS.find((item) => item.id === chartId) ?? CHARTS[0];
   const downloadOptions = DOWNLOADS[chartId];
   const displayedLayout: YihuaResolvedLayout =
@@ -359,6 +372,29 @@ export default function Home() {
       window.cancelAnimationFrame(frame);
       media.removeEventListener("change", updateTarget);
     };
+  }, []);
+
+  useEffect(() => {
+    if (
+      navigator.maxTouchPoints < 1 ||
+      typeof navigator.share !== "function" ||
+      typeof navigator.canShare !== "function"
+    ) {
+      return;
+    }
+
+    let supported = false;
+    try {
+      const probe = new File(["image"], "image.png", { type: "image/png" });
+      supported = navigator.canShare({ files: [probe] });
+    } catch {
+      supported = false;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      setCanShareImageFiles(supported);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {
@@ -670,6 +706,58 @@ export default function Home() {
     void prepareView({ nextTheme });
   }
 
+  function chartShareFile(option: DownloadOption) {
+    const cached = shareFileRequests.current.get(option.href);
+    if (cached) return cached;
+
+    const request = fetch(option.href)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Unable to load ${option.href}`);
+        }
+        return response.blob();
+      })
+      .then(
+        (blob) =>
+          new File([blob], option.filename, {
+            type: blob.type || "image/jpeg",
+          }),
+      );
+
+    shareFileRequests.current.set(option.href, request);
+    request.catch(() => shareFileRequests.current.delete(option.href));
+    return request;
+  }
+
+  function warmChartShare(option: DownloadOption) {
+    if (!canShareImageFiles) return;
+    void chartShareFile(option).catch(() => undefined);
+  }
+
+  async function shareOrDownloadChart(
+    event: React.MouseEvent<HTMLAnchorElement>,
+    option: DownloadOption,
+  ) {
+    if (!canShareImageFiles) return;
+    event.preventDefault();
+
+    try {
+      const file = await chartShareFile(option);
+      if (!navigator.canShare({ files: [file] })) {
+        triggerImageDownload(option.href, option.filename);
+        return;
+      }
+      await navigator.share({
+        files: [file],
+        title: chart.title,
+      });
+    } catch (error) {
+      if (!isShareCancellation(error)) {
+        triggerImageDownload(option.href, option.filename);
+      }
+    }
+  }
+
   async function saveHeartSutraImage() {
     setSaveStatus("saving");
 
@@ -760,13 +848,32 @@ export default function Home() {
           "image/png",
         );
       });
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = objectUrl;
-      link.download = `般若波罗蜜多心经_玄奘译_${
+      const filename = `般若波罗蜜多心经_玄奘译_${
         theme === "dark" ? "深色版" : "浅色版"
       }.png`;
-      link.click();
+
+      if (canShareImageFiles) {
+        const file = new File([blob], filename, { type: "image/png" });
+        if (navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: "般若波罗蜜多心经",
+            });
+            setSaveStatus("saved");
+            window.setTimeout(() => setSaveStatus("idle"), 1800);
+            return;
+          } catch (error) {
+            if (isShareCancellation(error)) {
+              setSaveStatus("idle");
+              return;
+            }
+          }
+        }
+      }
+
+      const objectUrl = URL.createObjectURL(blob);
+      triggerImageDownload(objectUrl, filename);
       window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
       setSaveStatus("saved");
       window.setTimeout(() => setSaveStatus("idle"), 1800);
@@ -1006,11 +1113,25 @@ export default function Home() {
                       className="action-button action-button--primary"
                       href={currentDownload.href}
                       download={currentDownload.filename}
-                      aria-label={`下载当前显示的${chart.title}图片`}
-                      title={`下载当前显示：${currentDownload.label}`}
+                      aria-label={
+                        canShareImageFiles
+                          ? `在手机上分享或保存当前显示的${chart.title}图片`
+                          : `下载当前显示的${chart.title}图片`
+                      }
+                      title={
+                        canShareImageFiles
+                          ? "打开系统菜单，可选择“存储到照片”"
+                          : `下载当前显示：${currentDownload.label}`
+                      }
+                      onPointerDown={() => warmChartShare(currentDownload)}
+                      onClick={(event) =>
+                        void shareOrDownloadChart(event, currentDownload)
+                      }
                     >
                       <DownloadIcon />
-                      <span>下载图片</span>
+                      <span>
+                        {canShareImageFiles ? "存到手机" : "下载图片"}
+                      </span>
                     </a>
 
                     {downloadOptions.length > 1 && (
@@ -1034,11 +1155,13 @@ export default function Home() {
                                   ? "true"
                                   : undefined
                               }
-                              onClick={(event) =>
+                              onPointerDown={() => warmChartShare(option)}
+                              onClick={(event) => {
                                 event.currentTarget
                                   .closest("details")
-                                  ?.removeAttribute("open")
-                              }
+                                  ?.removeAttribute("open");
+                                void shareOrDownloadChart(event, option);
+                              }}
                               key={option.href}
                             >
                               {option.label}
@@ -1087,7 +1210,16 @@ export default function Home() {
                     type="button"
                     onClick={() => void saveHeartSutraImage()}
                     disabled={saveStatus === "saving"}
-                    aria-label="将般若波罗蜜多心经保存为图片"
+                    aria-label={
+                      canShareImageFiles
+                        ? "在手机上分享或将般若波罗蜜多心经保存到相册"
+                        : "将般若波罗蜜多心经保存为图片"
+                    }
+                    title={
+                      canShareImageFiles
+                        ? "打开系统菜单，可选择“存储到照片”"
+                        : undefined
+                    }
                   >
                     <ImageIcon />
                     <span>
@@ -1095,9 +1227,11 @@ export default function Home() {
                         ? "生成中"
                         : saveStatus === "saved"
                           ? "已保存"
-                          : saveStatus === "error"
-                            ? "保存失败"
-                            : "保存为图片"}
+                        : saveStatus === "error"
+                          ? "保存失败"
+                            : canShareImageFiles
+                              ? "存到手机"
+                              : "保存为图片"}
                     </span>
                   </button>
                 </>

@@ -104,6 +104,11 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes("保存为图片"));
   assert.ok(pageSource.includes('theme === "dark" ? "深色版" : "浅色版"'));
   assert.ok(pageSource.includes("HEART_SUTRA_IMAGE_PALETTES[theme]"));
+  assert.ok(pageSource.includes("navigator.maxTouchPoints < 1"));
+  assert.ok(pageSource.includes("navigator.canShare({ files: [probe] })"));
+  assert.ok(pageSource.includes("await navigator.share({"));
+  assert.ok(pageSource.includes('"存到手机"'));
+  assert.ok(pageSource.includes("triggerImageDownload"));
 
   await Promise.all(
     downloadFiles.map((file) =>
