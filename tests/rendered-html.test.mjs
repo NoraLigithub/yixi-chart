@@ -86,22 +86,38 @@ test("server-renders the static chart viewer", async () => {
     "yunmen-dark.jpg",
     "yunmen-light.jpg",
   ];
-  const pageSource = await readFile(
-    new URL("../app/page.tsx", import.meta.url),
-    "utf8",
-  );
+  const [pageSource, heartSutra, yixiDocument] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(
+      new URL("../content/texts/heart-sutra.json", import.meta.url),
+      "utf8",
+    ).then(JSON.parse),
+    readFile(
+      new URL("../content/charts/yixi.json", import.meta.url),
+      "utf8",
+    ).then(JSON.parse),
+  ]);
 
   assert.ok(pageSource.includes('type LibraryView = "charts" | "heart-sutra"'));
-  assert.ok(pageSource.includes('shortTitle: "一夕"'));
-  assert.ok(!pageSource.includes('shortTitle: "一夕中道"'));
+  assert.equal(yixiDocument.short_title, "一夕");
+  assert.notEqual(yixiDocument.short_title, "一夕中道");
   assert.ok(pageSource.includes('className="sr-only"'));
   assert.ok(pageSource.includes('"document-header--chart"'));
-  assert.ok(pageSource.includes('"般若波罗蜜多心经"'));
-  assert.ok(pageSource.includes('"唐三藏法师玄奘译"'));
-  assert.ok(pageSource.includes("观自在菩萨行深般若波罗蜜多时"));
-  assert.ok(pageSource.includes("揭谛　揭谛　波罗揭谛"));
+  assert.equal(heartSutra.title, "般若波罗蜜多心经");
+  assert.equal(heartSutra.attribution, "唐三藏法师玄奘译");
+  assert.ok(
+    heartSutra.sections.some((section) =>
+      section.text.includes("观自在菩萨行深般若波罗蜜多时"),
+    ),
+  );
+  assert.ok(
+    heartSutra.sections.some((section) =>
+      section.text.includes("揭谛　揭谛　波罗揭谛"),
+    ),
+  );
+  assert.ok(pageSource.includes("HEART_SUTRA_DOCUMENT.title"));
   assert.ok(pageSource.includes("复制全文"));
-  assert.ok(pageSource.includes("下载般若波罗蜜多心经图片"));
+  assert.ok(pageSource.includes("`下载${HEART_SUTRA_DOCUMENT.title}图片`"));
   assert.ok(!pageSource.includes("保存为图片"));
   assert.ok(pageSource.includes('theme === "dark" ? "深色版" : "浅色版"'));
   assert.ok(pageSource.includes("HEART_SUTRA_IMAGE_PALETTES[theme]"));
@@ -115,13 +131,15 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(!pageSource.includes('"下载图片"'));
   assert.ok(pageSource.includes("triggerImageDownload"));
 
+  const heartSutraCopyControl =
+    "aria-label={`复制${HEART_SUTRA_DOCUMENT.title}全文`}";
   const heartSutraActions = pageSource.slice(
-    pageSource.indexOf('aria-label="复制般若波罗蜜多心经全文"') - 1800,
-    pageSource.indexOf('aria-label="复制般若波罗蜜多心经全文"') + 300,
+    pageSource.indexOf(heartSutraCopyControl) - 1800,
+    pageSource.indexOf(heartSutraCopyControl) + 300,
   );
   assert.ok(
     heartSutraActions.indexOf('"保存图片"') <
-      heartSutraActions.indexOf('aria-label="复制般若波罗蜜多心经全文"'),
+      heartSutraActions.indexOf(heartSutraCopyControl),
     "Heart Sutra actions put image saving before copy",
   );
 

@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "id": "yixi",
+  "kind": "lineage_chart",
+  "title": "一夕中道谱",
+  "short_title": "一夕",
+  "nodes": [
+    {
+      "id": "yixi_zhongdao",
+      "name": {"primary": "一夕中道", "variants": []},
+      "parents": [],
+      "tags": []
+    },
+    {
+      "id": "direct_29",
+      "name": {"primary": null, "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 29, "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "direct_28",
+      "name": {"primary": null, "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 28, "display_order": 2}],
+      "tags": []
+    },
+    {
+      "id": "direct_27",
+      "name": {"primary": null, "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 27, "display_order": 3}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yifa",
+      "name": {"primary": "一夕一法", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 26, "display_order": 4}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yixing",
+      "name": {"primary": "一夕一行", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 25, "display_order": 5}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yimeng",
+      "name": {"primary": "一夕一梦", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 24, "display_order": 6}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yinian",
+      "name": {"primary": "一夕一念", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 23, "display_order": 7}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yixin",
+      "name": {"primary": "一夕一心", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 22, "display_order": 8}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yisheng",
+      "name": {"primary": "一夕一生", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 21, "display_order": 9}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yining",
+      "name": {"primary": "一夕一宁", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 20, "display_order": 10}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yichun",
+      "name": {"primary": "一夕一纯", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 19, "display_order": 11}],
+      "tags": []
+    },
+    {
+      "id": "yixi_zhenyou",
+      "name": {"primary": "一夕真有", "variants": []},
+      "parents": [{"node_id": "yixi_yichun", "relation": "disciple_of", "lineage_order": 2, "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "yixi_zhenmiao",
+      "name": {"primary": "一夕真妙", "variants": []},
+      "parents": [{"node_id": "yixi_yichun", "relation": "disciple_of", "lineage_order": 1, "display_order": 2}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yizheng",
+      "name": {"primary": "一夕一正", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 18, "display_order": 12}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yide",
+      "name": {"primary": "一夕一得", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 17, "display_order": 13}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yiqing",
+      "name": {"primary": "一夕一清", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 16, "display_order": 14}],
+      "tags": []
+    },
+    {
+      "id": "yixi_zhenjue",
+      "name": {"primary": "一夕真觉", "variants": []},
+      "parents": [{"node_id": "yixi_yiqing", "relation": "disciple_of", "lineage_order": 1, "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yiming",
+      "name": {"primary": "一夕一明", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 8, "display_order": 15}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yizhen",
+      "name": {"primary": "一夕一真", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 3, "display_order": 16}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yiru",
+      "name": {"primary": "一夕一如", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 2, "display_order": 17}],
+      "tags": []
+    },
+    {
+      "id": "yixi_yiren",
+      "name": {"primary": "一夕一人", "variants": []},
+      "parents": [{"node_id": "yixi_zhongdao", "relation": "disciple_of", "lineage_order": 1, "display_order": 18}],
+      "tags": []
+    },
+    {
+      "id": "yixi_zhenyi",
+      "name": {"primary": "一夕真意", "variants": []},
+      "parents": [{"node_id": "yixi_yiren", "relation": "disciple_of", "lineage_order": 3, "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "yixi_zhenru",
+      "name": {"primary": "一夕真如", "variants": []},
+      "parents": [{"node_id": "yixi_yiren", "relation": "disciple_of", "lineage_order": 2, "display_order": 2}],
+      "tags": []
+    },
+    {
+      "id": "yixi_zhenchang",
+      "name": {"primary": "一夕真常", "variants": []},
+      "parents": [{"node_id": "yixi_yiren", "relation": "disciple_of", "lineage_order": 1, "display_order": 3}],
+      "tags": []
+    }
+  ],
+  "groups": [],
+  "annotations": [
+    {"kind": "record", "placement": "footer", "text": "丙午正月初一"}
+  ],
+  "layout": {
+    "a4_orientation": "landscape",
+    "node_hints": {
+      "direct_29": {"x": 210},
+      "direct_28": {"x": 363},
+      "direct_27": {"x": 516},
+      "yixi_yifa": {"x": 669},
+      "yixi_yixing": {"x": 822},
+      "yixi_yimeng": {"x": 975},
+      "yixi_yinian": {"x": 1129},
+      "yixi_yixin": {"x": 1282},
+      "yixi_yisheng": {"x": 1435},
+      "yixi_yining": {"x": 1588},
+      "yixi_yichun": {"x": 1741},
+      "yixi_yizheng": {"x": 1894},
+      "yixi_yide": {"x": 2047},
+      "yixi_yiqing": {"x": 2200},
+      "yixi_yiming": {"x": 2353},
+      "yixi_yizhen": {"x": 2507},
+      "yixi_yiru": {"x": 2660},
+      "yixi_yiren": {"x": 2813}
+    }
+  }
+}

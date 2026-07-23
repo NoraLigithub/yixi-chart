@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "id": "yihua",
+  "kind": "lineage_chart",
+  "title": "一花五叶谱",
+  "short_title": "一花五叶",
+  "description": "五叶：沩仰宗、临济宗、曹洞宗、云门宗、法眼宗。",
+  "nodes": [
+    {
+      "id": "n1",
+      "name": {"primary": "六祖", "variants": []},
+      "generation": 6,
+      "birth_year": "六三八",
+      "parents": [],
+      "tags": []
+    },
+    {
+      "id": "n2",
+      "name": {"primary": "永嘉玄觉", "variants": []},
+      "generation": 7,
+      "parents": [{"node_id": "n1", "relation": "lineage", "display_order": 1}],
+      "tags": ["天台、禅"]
+    },
+    {
+      "id": "n3",
+      "name": {"primary": "荷泽神会", "variants": []},
+      "generation": 7,
+      "parents": [{"node_id": "n1", "relation": "lineage", "display_order": 2}],
+      "tags": []
+    },
+    {
+      "id": "n4",
+      "name": {"primary": "青原行思", "variants": []},
+      "generation": 7,
+      "parents": [{"node_id": "n1", "relation": "lineage", "display_order": 3}],
+      "tags": []
+    },
+    {
+      "id": "n5",
+      "name": {"primary": "南岳怀让", "variants": []},
+      "generation": 7,
+      "parents": [{"node_id": "n1", "relation": "lineage", "display_order": 4}],
+      "tags": []
+    },
+    {
+      "id": "n6",
+      "name": {"primary": "南阳慧忠", "variants": []},
+      "generation": 7,
+      "parents": [{"node_id": "n1", "relation": "lineage", "display_order": 5}],
+      "tags": []
+    },
+    {
+      "id": "n7",
+      "name": {"primary": "圭峰宗密", "variants": []},
+      "generation": 10,
+      "parents": [
+        {
+          "node_id": "n3",
+          "relation": "lineage",
+          "display_order": 1,
+          "render_style": "dashed",
+          "note": "隔代传承"
+        }
+      ],
+      "tags": ["禅、华严"]
+    },
+    {
+      "id": "n8",
+      "name": {"primary": "石头希迁", "variants": []},
+      "generation": 8,
+      "parents": [{"node_id": "n4", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n9",
+      "name": {
+        "primary": "洪州道一",
+        "variants": [{"value": "马祖道一", "kind": "alias", "wrapper": "parentheses"}]
+      },
+      "generation": 8,
+      "parents": [{"node_id": "n5", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n10",
+      "name": {"primary": "天皇道悟", "variants": []},
+      "generation": 9,
+      "parents": [{"node_id": "n8", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n11",
+      "name": {"primary": "药山惟俨", "variants": []},
+      "generation": 9,
+      "parents": [{"node_id": "n8", "relation": "lineage", "display_order": 2}],
+      "tags": []
+    },
+    {
+      "id": "n12",
+      "name": {"primary": "丹霞天然", "variants": []},
+      "generation": 9,
+      "parents": [{"node_id": "n8", "relation": "lineage", "display_order": 3}],
+      "tags": []
+    },
+    {
+      "id": "n13",
+      "name": {"primary": "百丈怀海", "variants": []},
+      "generation": 9,
+      "parents": [{"node_id": "n9", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n14",
+      "name": {"primary": "龙潭崇信", "variants": []},
+      "generation": 10,
+      "parents": [{"node_id": "n10", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n15",
+      "name": {
+        "primary": "道吾圆智",
+        "variants": [{"value": "宗智", "kind": "alias", "wrapper": "parentheses"}]
+      },
+      "generation": 10,
+      "parents": [{"node_id": "n11", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n16",
+      "name": {"primary": "云岩昙晟", "variants": []},
+      "generation": 10,
+      "parents": [{"node_id": "n11", "relation": "lineage", "display_order": 2}],
+      "tags": []
+    },
+    {
+      "id": "n17",
+      "name": {"primary": "船子德诚", "variants": []},
+      "generation": 10,
+      "parents": [{"node_id": "n11", "relation": "lineage", "display_order": 3}],
+      "tags": []
+    },
+    {
+      "id": "n18",
+      "name": {"primary": "沩山灵佑", "variants": []},
+      "generation": 10,
+      "parents": [{"node_id": "n13", "relation": "lineage", "display_order": 1}],
+      "tags": ["沩仰宗"]
+    },
+    {
+      "id": "n19",
+      "name": {"primary": "黄檗希运", "variants": []},
+      "generation": 10,
+      "parents": [{"node_id": "n13", "relation": "lineage", "display_order": 2}],
+      "tags": []
+    },
+    {
+      "id": "n20",
+      "name": {"primary": "德山宣鉴", "variants": []},
+      "generation": 11,
+      "parents": [{"node_id": "n14", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n22",
+      "name": {"primary": "洞山良介", "variants": []},
+      "generation": 11,
+      "parents": [{"node_id": "n16", "relation": "lineage", "display_order": 1}],
+      "tags": ["曹洞宗"]
+    },
+    {
+      "id": "n23",
+      "name": {"primary": "夹山善会", "variants": []},
+      "generation": 11,
+      "parents": [{"node_id": "n17", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n24",
+      "name": {"primary": "仰山慧寂", "variants": []},
+      "generation": 11,
+      "parents": [{"node_id": "n18", "relation": "lineage", "display_order": 1}],
+      "tags": ["沩仰宗"]
+    },
+    {
+      "id": "n25",
+      "name": {"primary": "临济义玄", "variants": []},
+      "generation": 11,
+      "parents": [{"node_id": "n19", "relation": "lineage", "display_order": 1}],
+      "tags": ["临济宗"]
+    },
+    {
+      "id": "n26",
+      "name": {"primary": "雪峰义存", "variants": []},
+      "generation": 12,
+      "parents": [{"node_id": "n20", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n27",
+      "name": {"primary": "曹山本寂", "variants": []},
+      "generation": 12,
+      "parents": [{"node_id": "n22", "relation": "lineage", "display_order": 1}],
+      "tags": ["曹洞宗"]
+    },
+    {
+      "id": "n28",
+      "name": {"primary": "云门文偃", "variants": []},
+      "generation": 13,
+      "parents": [{"node_id": "n26", "relation": "lineage", "display_order": 1}],
+      "tags": ["云门宗"]
+    },
+    {
+      "id": "n29",
+      "name": {"primary": "玄沙师备", "variants": []},
+      "generation": 13,
+      "parents": [{"node_id": "n26", "relation": "lineage", "display_order": 2}],
+      "tags": []
+    },
+    {
+      "id": "n30",
+      "name": {
+        "primary": "罗汉桂琛",
+        "variants": [{"value": "地藏桂琛", "kind": "alias", "wrapper": "parentheses"}]
+      },
+      "generation": 14,
+      "parents": [{"node_id": "n29", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n31",
+      "name": {"primary": "法眼文益", "variants": []},
+      "generation": 15,
+      "birth_year": "八八五",
+      "parents": [{"node_id": "n30", "relation": "lineage", "display_order": 1}],
+      "tags": ["法眼宗"]
+    },
+    {
+      "id": "n32",
+      "name": {"primary": "天台德韶", "variants": []},
+      "generation": 16,
+      "parents": [{"node_id": "n31", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n33",
+      "name": {"primary": "永明延寿", "variants": []},
+      "generation": 17,
+      "parents": [{"node_id": "n32", "relation": "lineage", "display_order": 1}],
+      "tags": ["禅、净土"]
+    }
+  ],
+  "groups": [
+    {
+      "name": "五叶",
+      "members": ["沩仰宗", "临济宗", "曹洞宗", "云门宗", "法眼宗"]
+    }
+  ],
+  "annotations": [
+    {
+      "kind": "editorial",
+      "node_id": "n7",
+      "text": "根据与第十代标签的相对位置判断为第十代，与第七代通过虚线连接，表示隔代传承"
+    },
+    {
+      "kind": "editorial",
+      "node_id": "n1",
+      "text": "六三八为六祖出生年，制图时以“生年·六三八”置于人物框内第二行"
+    },
+    {
+      "kind": "editorial",
+      "node_id": "n31",
+      "text": "八八五为法眼文益出生年，制图时以“生年·八八五”置于人物框内第二行"
+    },
+    {
+      "kind": "editorial",
+      "node_id": "n9",
+      "text": "原始资料写作“洪州 (马祖)道一”，制图统一为“洪州道一（马祖道一）”，正名与括号异名在人物框内分两行显示"
+    },
+    {
+      "kind": "editorial",
+      "node_id": "n15",
+      "text": "原始资料写作“道吾圆智（宗智）”，正名与括号异名在人物框内分两行显示"
+    },
+    {
+      "kind": "editorial",
+      "node_id": "n30",
+      "text": "原始资料写作“罗汉(地藏)桂琛”，制图统一为“罗汉桂琛（地藏桂琛）”，正名与括号异名在人物框内分两行显示"
+    },
+    {
+      "kind": "record",
+      "placement": "footer",
+      "text": "2026年5月11日，吾师中道口述  一夕一心、一夕一念笔记"
+    },
+    {
+      "kind": "credit",
+      "placement": "footer",
+      "text": "一夕真妙制作图谱"
+    }
+  ],
+  "layout": {
+    "a4_orientation": "landscape",
+    "background": "#FFFFFF",
+    "output": {"a4": "一花五叶谱_浅色版_A4_300dpi.jpeg"},
+    "node_hints": {
+      "n1": {"align_x_with": "n11"},
+      "n4": {"align_x_with": "n11"},
+      "n8": {"align_x_with": "n11"},
+      "n9": {"compact_name": true},
+      "n15": {"compact_name": true},
+      "n30": {"compact_name": true}
+    },
+    "label_side_overrides": {"n25": "right"}
+  }
+}

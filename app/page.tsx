@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { assetPath } from "./asset-path";
+import { CHART_DOCUMENTS, HEART_SUTRA_DOCUMENT } from "./content";
 import {
   ATI_COPY_TEXT,
   AtiyogaChart,
@@ -35,21 +36,13 @@ type DownloadOption = {
 type LibraryView = "charts" | "heart-sutra";
 type ActionStatus = "idle" | "copied" | "saving" | "saved" | "error";
 
-const HEART_SUTRA_SECTIONS = [
-  "观自在菩萨行深般若波罗蜜多时，照见五蕴皆空，度一切苦厄。",
-  "舍利子！色不异空，空不异色，色即是空，空即是色；受、想、行、识，亦复如是。",
-  "舍利子！是诸法空相，不生不灭，不垢不净，不增不减。是故，空中无色，无受、想、行、识；无眼、耳、鼻、舌、身、意；无色、声、香、味、触、法；无眼界，乃至无意识界；无无明亦无无明尽，乃至无老死亦无老死尽；无苦、集、灭、道；无智，亦无得。",
-  "以无所得故，菩提萨埵依般若波罗蜜多故，心无挂碍；无挂碍故，无有恐怖，远离颠倒梦想，究竟涅槃。三世诸佛依般若波罗蜜多故，得阿耨多罗三藐三菩提。",
-  "故知般若波罗蜜多是大神咒、是大明咒、是无上咒、是无等等咒，能除一切苦，真实不虚，故说般若波罗蜜多咒。",
-  "即说咒曰：",
-  "揭谛　揭谛　波罗揭谛　波罗僧揭谛　菩提　萨婆诃",
-] as const;
+const HEART_SUTRA_SECTIONS = HEART_SUTRA_DOCUMENT.sections;
 
 const HEART_SUTRA_COPY_TEXT = [
-  "般若波罗蜜多心经",
-  "唐三藏法师玄奘译",
+  HEART_SUTRA_DOCUMENT.title,
+  HEART_SUTRA_DOCUMENT.attribution,
   "",
-  ...HEART_SUTRA_SECTIONS,
+  ...HEART_SUTRA_SECTIONS.map((section) => section.text),
 ].join("\n\n");
 
 const HEART_SUTRA_IMAGE_PALETTES = {
@@ -133,33 +126,20 @@ const DOWNLOADS: Record<ChartId, DownloadOption[]> = {
   ],
 };
 
-const CHARTS: Chart[] = [
-  {
-    id: "yihua",
-    title: "一花五叶谱",
-    shortTitle: "一花五叶",
-    note: "五叶：沩仰宗、临济宗、曹洞宗、云门宗、法眼宗。",
-    copyText: YIHUA_COPY_TEXT,
-  },
-  {
-    id: "yunmen",
-    title: "云门宗与丹法南宗谱",
-    shortTitle: "云门与丹法",
-    copyText: YUNMEN_COPY_TEXT,
-  },
-  {
-    id: "atiyoga",
-    title: "阿的瑜伽传承系统表 · 其一",
-    shortTitle: "阿的瑜伽",
-    copyText: ATI_COPY_TEXT,
-  },
-  {
-    id: "yixi",
-    title: "一夕中道谱",
-    shortTitle: "一夕",
-    copyText: YIXI_COPY_TEXT,
-  },
-];
+const CHART_COPY_TEXT: Record<ChartId, string> = {
+  yihua: YIHUA_COPY_TEXT,
+  yunmen: YUNMEN_COPY_TEXT,
+  atiyoga: ATI_COPY_TEXT,
+  yixi: YIXI_COPY_TEXT,
+};
+
+const CHARTS: Chart[] = CHART_DOCUMENTS.map((document) => ({
+  id: document.id,
+  title: document.title,
+  shortTitle: document.short_title,
+  note: document.description,
+  copyText: CHART_COPY_TEXT[document.id],
+}));
 
 function DownloadIcon() {
   return (
@@ -795,12 +775,12 @@ export default function Home() {
       context.textAlign = "center";
       context.font =
         '500 74px "Songti SC", "STSong", "Noto Serif CJK SC", serif';
-      context.fillText("般若波罗蜜多心经", width / 2, 226);
+      context.fillText(HEART_SUTRA_DOCUMENT.title, width / 2, 226);
 
       context.fillStyle = palette.subtitle;
       context.font =
         '32px "Kaiti SC", "STKaiti", "Songti SC", serif';
-      context.fillText("唐三藏法师玄奘译", width / 2, 304);
+      context.fillText(HEART_SUTRA_DOCUMENT.attribution, width / 2, 304);
 
       context.beginPath();
       context.moveTo(width / 2 - 90, 352);
@@ -817,9 +797,9 @@ export default function Home() {
       context.font =
         '40px "Songti SC", "STSong", "Noto Serif CJK SC", serif';
 
-      for (const paragraph of HEART_SUTRA_SECTIONS) {
+      for (const section of HEART_SUTRA_SECTIONS) {
         let line = "";
-        for (const character of paragraph) {
+        for (const character of section.text) {
           const candidate = line + character;
           if (context.measureText(candidate).width > maxLineWidth && line) {
             context.fillText(line, 200, y);
@@ -843,7 +823,7 @@ export default function Home() {
           "image/png",
         );
       });
-      const filename = `般若波罗蜜多心经_玄奘译_${
+      const filename = `${HEART_SUTRA_DOCUMENT.title}_${HEART_SUTRA_DOCUMENT.translator.name}译_${
         theme === "dark" ? "深色版" : "浅色版"
       }.png`;
 
@@ -853,7 +833,7 @@ export default function Home() {
           try {
             await navigator.share({
               files: [file],
-              title: "般若波罗蜜多心经",
+              title: HEART_SUTRA_DOCUMENT.title,
             });
             setSaveStatus("saved");
             window.setTimeout(() => setSaveStatus("idle"), 1800);
@@ -973,7 +953,7 @@ export default function Home() {
                 tabIndex={0}
                 onClick={chooseHeartSutra}
               >
-                般若波罗蜜多心经
+                {HEART_SUTRA_DOCUMENT.title}
               </button>
             )}
           </nav>
@@ -1035,8 +1015,8 @@ export default function Home() {
           ) : (
             <div className="document-title">
               <span className="document-kind">典籍</span>
-              <h1 id="active-document-title">般若波罗蜜多心经</h1>
-              <p>唐三藏法师玄奘译</p>
+              <h1 id="active-document-title">{HEART_SUTRA_DOCUMENT.title}</h1>
+              <p>{HEART_SUTRA_DOCUMENT.attribution}</p>
             </div>
           )}
 
@@ -1190,13 +1170,13 @@ export default function Home() {
                     disabled={saveStatus === "saving"}
                     aria-label={
                       canShareImageFiles
-                        ? "在手机上分享或将般若波罗蜜多心经保存到相册"
-                        : "下载般若波罗蜜多心经图片"
+                        ? `在手机上分享或将${HEART_SUTRA_DOCUMENT.title}保存到相册`
+                        : `下载${HEART_SUTRA_DOCUMENT.title}图片`
                     }
                     title={
                       canShareImageFiles
                         ? "打开系统菜单，可选择“存储到照片”"
-                        : "下载般若波罗蜜多心经图片"
+                        : `下载${HEART_SUTRA_DOCUMENT.title}图片`
                     }
                   >
                     <DownloadIcon />
@@ -1214,7 +1194,7 @@ export default function Home() {
                     className={`action-button action-button--${copyStatus}`}
                     type="button"
                     onClick={copyAllText}
-                    aria-label="复制般若波罗蜜多心经全文"
+                    aria-label={`复制${HEART_SUTRA_DOCUMENT.title}全文`}
                   >
                     <CopyIcon />
                     <span>
@@ -1247,31 +1227,27 @@ export default function Home() {
           <div className="sutra-surface" key="heart-sutra">
             <article
               className="sutra-leaf"
-              aria-label="般若波罗蜜多心经全文"
+              aria-label={`${HEART_SUTRA_DOCUMENT.title}全文`}
             >
               <header className="sutra-heading">
-                <h2>般若波罗蜜多心经</h2>
-                <p>唐三藏法师玄奘译</p>
+                <h2>{HEART_SUTRA_DOCUMENT.title}</h2>
+                <p>{HEART_SUTRA_DOCUMENT.attribution}</p>
               </header>
               <div className="sutra-rule" aria-hidden="true">
                 <span />
               </div>
               <div className="sutra-text">
-                {HEART_SUTRA_SECTIONS.map((section, index) => (
+                {HEART_SUTRA_SECTIONS.map((section) => (
                   <p
                     className={[
-                      index === HEART_SUTRA_SECTIONS.length - 2
-                        ? "is-lead"
-                        : "",
-                      index === HEART_SUTRA_SECTIONS.length - 1
-                        ? "is-mantra"
-                        : "",
+                      section.kind === "lead" ? "is-lead" : "",
+                      section.kind === "mantra" ? "is-mantra" : "",
                     ]
                       .filter(Boolean)
                       .join(" ")}
-                    key={section}
+                    key={section.id}
                   >
-                    {section}
+                    {section.text}
                   </p>
                 ))}
               </div>

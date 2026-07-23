@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "id": "atiyoga",
+  "kind": "lineage_chart",
+  "title": "阿的瑜伽传承系统表（其一）",
+  "short_title": "阿的瑜伽",
+  "nodes": [
+    {
+      "id": "garab_dorje",
+      "name": {
+        "primary": "嘉饶多杰",
+        "variants": [
+          {"value": "嘎饶多杰", "kind": "common", "wrapper": "corner_brackets"},
+          {"value": "极喜金刚", "kind": "meaning", "wrapper": "parentheses"}
+        ]
+      },
+      "parents": [],
+      "tags": []
+    },
+    {
+      "id": "manjushrimitra",
+      "name": {
+        "primary": "蒋巴舍宁",
+        "variants": [
+          {"value": "蒋华西宁", "kind": "common", "wrapper": "corner_brackets"},
+          {"value": "文殊友", "kind": "meaning", "wrapper": "parentheses"}
+        ]
+      },
+      "parents": [
+        {"node_id": "garab_dorje", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    },
+    {
+      "id": "shri_singha",
+      "name": {
+        "primary": "诗列星哈",
+        "variants": [
+          {"value": "西日桑哈", "kind": "common", "wrapper": "corner_brackets"},
+          {"value": "吉祥狮子", "kind": "meaning", "wrapper": "parentheses"}
+        ]
+      },
+      "parents": [
+        {"node_id": "manjushrimitra", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    },
+    {
+      "id": "vimalamitra",
+      "name": {
+        "primary": "卑吗那密渣",
+        "variants": [
+          {"value": "布玛莫扎", "kind": "common", "wrapper": "corner_brackets"},
+          {"value": "无垢友", "kind": "meaning", "wrapper": "parentheses"}
+        ]
+      },
+      "parents": [
+        {"node_id": "shri_singha", "relation": "lineage", "display_order": 1},
+        {
+          "node_id": "jnanasutra",
+          "relation": "lineage_direction",
+          "display_order": 1
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "jnanasutra",
+      "name": {
+        "primary": "渣那宿渣",
+        "variants": [
+          {"value": "加纳思扎", "kind": "common", "wrapper": "corner_brackets"}
+        ]
+      },
+      "parents": [
+        {"node_id": "shri_singha", "relation": "lineage", "display_order": 2}
+      ],
+      "tags": []
+    }
+  ],
+  "groups": [],
+  "annotations": [
+    {
+      "kind": "source",
+      "placement": "body",
+      "text": "据二世敦珠法王（摧魔无畏金刚智）所著《西藏古代佛教史》"
+    },
+    {
+      "kind": "source",
+      "placement": "body",
+      "text": "吾师一夕中道口述于一夕讲堂"
+    },
+    {
+      "kind": "note",
+      "placement": "body",
+      "text": "注1：正文名为刘锐之先生译本"
+    },
+    {
+      "kind": "note",
+      "placement": "body",
+      "text": "注2：【】名为通行版本"
+    },
+    {
+      "kind": "note",
+      "placement": "body",
+      "text": "注3：诗列星哈为汉人"
+    },
+    {
+      "kind": "note",
+      "placement": "body",
+      "text": "注4：敦珠法王据传说认为诗列星哈即宋惠寿之异名"
+    },
+    {
+      "kind": "record",
+      "placement": "footer",
+      "text": "2026年7月20日  一夕一心、一夕真意笔记"
+    },
+    {
+      "kind": "credit",
+      "placement": "footer",
+      "text": "一夕真妙制作图谱"
+    }
+  ],
+  "layout": {
+    "a4_orientation": "portrait",
+    "output": {"a4": "阿的瑜伽传承系统表_其一_浅色版_A4_300dpi.jpeg"},
+    "main_chain": ["garab_dorje", "manjushrimitra", "shri_singha"],
+    "node_hints": {
+      "garab_dorje": {"x": 1240, "y": 430},
+      "manjushrimitra": {"x": 1240, "y": 805},
+      "shri_singha": {"x": 1240, "y": 1180},
+      "vimalamitra": {"x": 640, "y": 1690},
+      "jnanasutra": {"x": 1840, "y": 1690}
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "id": "yunmen",
+  "kind": "lineage_chart",
+  "title": "云门宗与丹法南宗（禅与丹）",
+  "short_title": "云门与丹法",
+  "nodes": [
+    {
+      "id": "n1",
+      "name": {"primary": "云门文偃禅师", "variants": []},
+      "parents": [],
+      "tags": []
+    },
+    {
+      "id": "n2",
+      "name": {"primary": "香林澄远禅师", "variants": []},
+      "parents": [{"node_id": "n1", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n3",
+      "name": {"primary": "智门光祚禅师", "variants": []},
+      "parents": [{"node_id": "n2", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n4",
+      "name": {"primary": "雪窦重显禅师", "variants": []},
+      "parents": [{"node_id": "n3", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n5",
+      "name": {
+        "primary": "张伯端",
+        "variants": [{"value": "紫阳真人", "kind": "title", "wrapper": "parentheses"}]
+      },
+      "parents": [
+        {
+          "node_id": "n4",
+          "relation": "lineage",
+          "display_order": 1,
+          "note": "《祖英集》"
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "n6",
+      "name": {
+        "primary": "石泰",
+        "variants": [{"value": "还源真人", "kind": "title", "wrapper": "parentheses"}]
+      },
+      "parents": [{"node_id": "n5", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n7",
+      "name": {
+        "primary": "薛式",
+        "variants": [
+          {"value": "紫贤真人、道光禅师", "kind": "title", "wrapper": "parentheses"}
+        ]
+      },
+      "parents": [{"node_id": "n6", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n8",
+      "name": {
+        "primary": "陈楠",
+        "variants": [{"value": "泥丸真人", "kind": "title", "wrapper": "parentheses"}]
+      },
+      "parents": [{"node_id": "n7", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    },
+    {
+      "id": "n9",
+      "name": {
+        "primary": "白玉蟾",
+        "variants": [{"value": "紫清真人", "kind": "title", "wrapper": "parentheses"}]
+      },
+      "parents": [{"node_id": "n8", "relation": "lineage", "display_order": 1}],
+      "tags": []
+    }
+  ],
+  "groups": [],
+  "annotations": [
+    {
+      "kind": "source",
+      "placement": "footer",
+      "text": "依据虚云老和尚上海玉佛寺禅七开示"
+    },
+    {
+      "kind": "source",
+      "placement": "footer",
+      "text": "吾师 一夕中道幻游散人 口述"
+    },
+    {
+      "kind": "record",
+      "placement": "footer",
+      "text": "一夕一心、一夕一念笔记  2026年6月1日"
+    },
+    {
+      "kind": "credit",
+      "placement": "footer",
+      "text": "一夕真妙制作图谱"
+    }
+  ],
+  "layout": {
+    "a4_orientation": "portrait",
+    "background": "#FEFCF8",
+    "output": {"a4": "云门宗与丹法南宗谱_浅色版_A4_300dpi.jpeg"},
+    "node_hints": {
+      "n1": {"row": 0, "side": "left"},
+      "n2": {"row": 1, "side": "left"},
+      "n3": {"row": 2, "side": "left"},
+      "n4": {"row": 3, "side": "left"},
+      "n5": {"row": 4, "side": "center"},
+      "n6": {"row": 5, "side": "center"},
+      "n7": {"row": 6, "side": "center"},
+      "n8": {"row": 7, "side": "center"},
+      "n9": {"row": 8, "side": "center"}
+    },
+    "relationship_hints": {
+      "n4>n5": {"label_side": "right"}
+    },
+    "unlabeled_parallel_branches": [
+      {"reference_id": "n4", "target_id": "n5", "horizontal_steps": 2}
+    ]
+  }
+}
