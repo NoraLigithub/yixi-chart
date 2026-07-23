@@ -57,7 +57,7 @@ test("server-renders the static chart viewer", async () => {
   assert.match(html, /复制一花五叶谱图谱数据（YAML）/);
   assert.match(html, /复制图谱数据/);
   assert.match(html, /下载当前显示的一花五叶谱图片/);
-  assert.match(html, /下载图片/);
+  assert.match(html, /保存图片/);
   assert.match(html, /选择一花五叶谱下载版本/);
   assert.match(html, /浅色 · 横幅/);
   assert.match(html, /深色 · 长卷/);
@@ -110,8 +110,9 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes('navigator.platform === "MacIntel"'));
   assert.ok(pageSource.includes("navigator.canShare({ files: [probe] })"));
   assert.ok(pageSource.includes("await navigator.share({"));
-  assert.ok(pageSource.includes('"存到手机"'));
-  assert.ok(pageSource.includes('"下载图片"'));
+  assert.ok(pageSource.includes('"保存图片"'));
+  assert.ok(!pageSource.includes('"存到手机"'));
+  assert.ok(!pageSource.includes('"下载图片"'));
   assert.ok(pageSource.includes("triggerImageDownload"));
 
   const heartSutraActions = pageSource.slice(
@@ -119,9 +120,9 @@ test("server-renders the static chart viewer", async () => {
     pageSource.indexOf('aria-label="复制般若波罗蜜多心经全文"') + 300,
   );
   assert.ok(
-    heartSutraActions.indexOf('"下载图片"') <
+    heartSutraActions.indexOf('"保存图片"') <
       heartSutraActions.indexOf('aria-label="复制般若波罗蜜多心经全文"'),
-    "Heart Sutra actions put image download before copy",
+    "Heart Sutra actions put image saving before copy",
   );
 
   await Promise.all(

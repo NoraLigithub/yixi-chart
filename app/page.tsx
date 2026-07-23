@@ -1124,9 +1124,7 @@ export default function Home() {
                       }
                     >
                       <DownloadIcon />
-                      <span>
-                        {canShareImageFiles ? "存到手机" : "下载图片"}
-                      </span>
+                      <span>保存图片</span>
                     </a>
 
                     {downloadOptions.length > 1 && (
@@ -1209,9 +1207,7 @@ export default function Home() {
                           ? "已保存"
                           : saveStatus === "error"
                             ? "保存失败"
-                            : canShareImageFiles
-                              ? "存到手机"
-                              : "下载图片"}
+                            : "保存图片"}
                     </span>
                   </button>
                   <button
