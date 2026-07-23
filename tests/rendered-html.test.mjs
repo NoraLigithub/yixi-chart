@@ -101,14 +101,28 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes("观自在菩萨行深般若波罗蜜多时"));
   assert.ok(pageSource.includes("揭谛　揭谛　波罗揭谛"));
   assert.ok(pageSource.includes("复制全文"));
-  assert.ok(pageSource.includes("保存为图片"));
+  assert.ok(pageSource.includes("下载般若波罗蜜多心经图片"));
+  assert.ok(!pageSource.includes("保存为图片"));
   assert.ok(pageSource.includes('theme === "dark" ? "深色版" : "浅色版"'));
   assert.ok(pageSource.includes("HEART_SUTRA_IMAGE_PALETTES[theme]"));
   assert.ok(pageSource.includes("navigator.maxTouchPoints < 1"));
+  assert.ok(pageSource.includes("/Android|iPhone|iPad|iPod|Mobile/i"));
+  assert.ok(pageSource.includes('navigator.platform === "MacIntel"'));
   assert.ok(pageSource.includes("navigator.canShare({ files: [probe] })"));
   assert.ok(pageSource.includes("await navigator.share({"));
   assert.ok(pageSource.includes('"存到手机"'));
+  assert.ok(pageSource.includes('"下载图片"'));
   assert.ok(pageSource.includes("triggerImageDownload"));
+
+  const heartSutraActions = pageSource.slice(
+    pageSource.indexOf('aria-label="复制般若波罗蜜多心经全文"') - 1800,
+    pageSource.indexOf('aria-label="复制般若波罗蜜多心经全文"') + 300,
+  );
+  assert.ok(
+    heartSutraActions.indexOf('"下载图片"') <
+      heartSutraActions.indexOf('aria-label="复制般若波罗蜜多心经全文"'),
+    "Heart Sutra actions put image download before copy",
+  );
 
   await Promise.all(
     downloadFiles.map((file) =>

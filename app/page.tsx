@@ -178,16 +178,6 @@ function CopyIcon() {
   );
 }
 
-function ImageIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="3" y="4" width="18" height="16" rx="2" />
-      <circle cx="9" cy="9" r="1.5" />
-      <path d="m5.5 17 4.5-4 3.2 2.8 2.5-2.2 2.8 3.4" />
-    </svg>
-  );
-}
-
 function isChartId(value: string | null): value is ChartId {
   return CHARTS.some((chart) => chart.id === value);
 }
@@ -375,7 +365,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const isMobileDevice =
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
     if (
+      !isMobileDevice ||
       navigator.maxTouchPoints < 1 ||
       typeof navigator.share !== "function" ||
       typeof navigator.canShare !== "function"
@@ -1191,6 +1186,35 @@ export default function Home() {
               ) : (
                 <>
                   <button
+                    className={`action-button action-button--primary action-button--${saveStatus}`}
+                    type="button"
+                    onClick={() => void saveHeartSutraImage()}
+                    disabled={saveStatus === "saving"}
+                    aria-label={
+                      canShareImageFiles
+                        ? "在手机上分享或将般若波罗蜜多心经保存到相册"
+                        : "下载般若波罗蜜多心经图片"
+                    }
+                    title={
+                      canShareImageFiles
+                        ? "打开系统菜单，可选择“存储到照片”"
+                        : "下载般若波罗蜜多心经图片"
+                    }
+                  >
+                    <DownloadIcon />
+                    <span>
+                      {saveStatus === "saving"
+                        ? "生成中"
+                        : saveStatus === "saved"
+                          ? "已保存"
+                          : saveStatus === "error"
+                            ? "保存失败"
+                            : canShareImageFiles
+                              ? "存到手机"
+                              : "下载图片"}
+                    </span>
+                  </button>
+                  <button
                     className={`action-button action-button--${copyStatus}`}
                     type="button"
                     onClick={copyAllText}
@@ -1203,35 +1227,6 @@ export default function Home() {
                         : copyStatus === "error"
                           ? "复制失败"
                           : "复制全文"}
-                    </span>
-                  </button>
-                  <button
-                    className={`action-button action-button--primary action-button--${saveStatus}`}
-                    type="button"
-                    onClick={() => void saveHeartSutraImage()}
-                    disabled={saveStatus === "saving"}
-                    aria-label={
-                      canShareImageFiles
-                        ? "在手机上分享或将般若波罗蜜多心经保存到相册"
-                        : "将般若波罗蜜多心经保存为图片"
-                    }
-                    title={
-                      canShareImageFiles
-                        ? "打开系统菜单，可选择“存储到照片”"
-                        : undefined
-                    }
-                  >
-                    <ImageIcon />
-                    <span>
-                      {saveStatus === "saving"
-                        ? "生成中"
-                        : saveStatus === "saved"
-                          ? "已保存"
-                        : saveStatus === "error"
-                          ? "保存失败"
-                            : canShareImageFiles
-                              ? "存到手机"
-                              : "保存为图片"}
                     </span>
                   </button>
                 </>
