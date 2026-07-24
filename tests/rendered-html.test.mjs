@@ -56,8 +56,8 @@ test("server-renders the static chart viewer", async () => {
   assert.match(html, /切换为横幅图谱/);
   assert.match(html, /切换为长卷图谱/);
   assert.match(html, /复制一花五叶谱完整内容/);
-  assert.match(html, /下载当前显示的一花五叶谱图片/);
-  assert.match(html, />保存<\/span>/);
+  assert.match(html, /将当前显示的一花五叶谱图片存到相册/);
+  assert.match(html, />存到相册<\/span>/);
   assert.doesNotMatch(html, /全屏查看一花五叶谱/);
   assert.match(html, /选择一花五叶谱显示与下载版本/);
   assert.match(html, /浅色 · 横幅/);
@@ -122,7 +122,11 @@ test("server-renders the static chart viewer", async () => {
       "aria-label={`复制${HEART_SUTRA_DOCUMENT.title}全文`}",
     ),
   );
-  assert.ok(pageSource.includes("`下载${HEART_SUTRA_DOCUMENT.title}图片`"));
+  assert.ok(
+    pageSource.includes(
+      "`将${HEART_SUTRA_DOCUMENT.title}图片存到相册`",
+    ),
+  );
   assert.ok(!pageSource.includes("保存为图片"));
   assert.ok(pageSource.includes('theme === "dark" ? "深色版" : "浅色版"'));
   assert.ok(pageSource.includes("HEART_SUTRA_IMAGE_PALETTES[theme]"));
@@ -135,11 +139,12 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes("navigator.share() must be called synchronously"));
   assert.ok(
     pageSource.includes(
-      "aria-label={`将当前显示的${chart.title}图片保存到相册`}",
+      "aria-label={`将当前显示的${chart.title}图片存到相册`}",
     ),
   );
   assert.ok(pageSource.includes('"存到相册"'));
-  assert.ok(pageSource.includes("<span>保存</span>"));
+  assert.ok(pageSource.includes("<span>存到相册</span>"));
+  assert.ok(!pageSource.includes("<span>保存</span>"));
   assert.ok(!pageSource.includes('"存到手机"'));
   assert.ok(!pageSource.includes('"下载图片"'));
   assert.ok(pageSource.includes("triggerImageDownload"));
@@ -155,7 +160,34 @@ test("server-renders the static chart viewer", async () => {
   );
   assert.ok(pageSource.includes("chart-viewport--panorama"));
   assert.ok(pageSource.includes("左右拖动查看横幅"));
-  assert.ok(pageSource.includes('"yixi-chart-layout"'));
+  assert.ok(
+    pageSource.includes(
+      'const [chartId, setChartId] = useState<ChartId>("yihua")',
+    ),
+  );
+  assert.ok(
+    pageSource.includes(
+      'const [layoutMode, setLayoutMode] = useState<YihuaLayoutMode>("desktop")',
+    ),
+  );
+  const preferenceEffect = pageSource.slice(
+    pageSource.indexOf("const params = new URLSearchParams"),
+    pageSource.indexOf("const isMobileDevice"),
+  );
+  assert.ok(
+    preferenceEffect.includes(
+      "window.localStorage.getItem(LAYOUT_PREFERENCE_KEY)",
+    ),
+  );
+  assert.ok(preferenceEffect.includes(': "desktop",'));
+  assert.ok(!preferenceEffect.includes("(max-width: 820px)"));
+  assert.ok(pageSource.includes('"yixi-chart-layout-choice"'));
+  assert.ok(
+    pageSource.includes(
+      "window.localStorage.setItem(LAYOUT_PREFERENCE_KEY, nextLayoutMode)",
+    ),
+  );
+  assert.ok(pageSource.includes("chooseLayout(value)"));
   assert.ok(!pageSource.includes("全屏查看"));
   assert.ok(!pageSource.includes('className="document-title"'));
 
@@ -210,14 +242,14 @@ test("server-renders the concise illustrated guide", async () => {
   assert.match(html, /现在打开图谱与典籍/);
   assert.match(html, /五步看懂，打开就会/);
   assert.match(html, /跟着红圈找按钮/);
-  assert.match(html, /五个红圈分别标出内容选择、明暗、版式、保存与复制按钮/);
+  assert.match(html, /五个红圈分别标出内容选择、明暗、版式、存到相册与复制按钮/);
   assert.match(html, /选择内容/);
   assert.match(html, /切换明暗/);
   assert.match(html, /切换版式/);
   assert.match(html, /第一次打开请稍等片刻/);
-  assert.match(html, /「横幅」适合电脑、iPad/);
+  assert.match(html, /默认显示「横幅」，手机和电脑一致/);
   assert.match(html, /红圈标出的右上角明暗切换按钮/);
-  assert.match(html, /保存图片/);
+  assert.match(html, /存到相册/);
   assert.match(html, /手机、iPad 在系统菜单选择「存储图像」/);
   assert.match(html, /电脑会直接下载/);
   assert.match(html, /复制文字/);

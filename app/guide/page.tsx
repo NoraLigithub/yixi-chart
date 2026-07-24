@@ -6,7 +6,7 @@ import styles from "./guide.module.css";
 export const metadata: Metadata = {
   title: "一夕｜30 秒上手",
   description:
-    "一夕简明使用说明：选择图谱或典籍，切换外观与版式，保存图片或复制文字。",
+    "一夕简明使用说明：选择图谱或典籍，切换外观与版式，存到相册或复制文字。",
 };
 
 const steps = [
@@ -29,18 +29,18 @@ const steps = [
   {
     number: "03",
     title: "切换版式",
-    copy: "「横幅」适合电脑、iPad；「长卷」适合手机向下阅读。",
+    copy: "默认显示「横幅」，手机和电脑一致；「长卷」适合手机向下阅读。",
     shotClass: styles.shotControls,
     ringClass: styles.ringLayout,
     shotAlt: "红圈标出的横幅和长卷切换按钮",
   },
   {
     number: "04",
-    title: "保存图片",
-    copy: "点「保存」即可。手机、iPad 在系统菜单选择「存储图像」，电脑会直接下载。",
+    title: "存到相册",
+    copy: "点「存到相册」即可。手机、iPad 在系统菜单选择「存储图像」，电脑会直接下载。",
     shotClass: styles.shotControls,
     ringClass: styles.ringSave,
-    shotAlt: "红圈标出的保存按钮和版本选择箭头",
+    shotAlt: "红圈标出的存到相册按钮和版本选择箭头",
   },
   {
     number: "05",
@@ -109,7 +109,7 @@ export default function GuidePage() {
               <div
                 className={styles.overviewDesktopShot}
                 role="img"
-                aria-label="电脑版图谱页面全貌，五个红圈分别标出内容选择、明暗、版式、保存与复制按钮"
+                aria-label="电脑版图谱页面全貌，五个红圈分别标出内容选择、明暗、版式、存到相册与复制按钮"
                 style={{ backgroundImage: `url("${desktopShot}")` }}
               />
               <span
@@ -134,7 +134,7 @@ export default function GuidePage() {
                 className={`${styles.callout} ${styles.desktopCalloutSave}`}
                 aria-hidden="true"
               >
-                <b>04 保存</b>
+                <b>04 相册</b>
               </span>
               <span
                 className={`${styles.callout} ${styles.desktopCalloutCopy}`}
@@ -147,7 +147,7 @@ export default function GuidePage() {
               <div
                 className={styles.overviewMobileShot}
                 role="img"
-                aria-label="手机版图谱页面上方全貌，五个红圈分别标出内容选择、明暗、版式、保存与复制按钮"
+                aria-label="手机版图谱页面上方全貌，五个红圈分别标出内容选择、明暗、版式、存到相册与复制按钮"
                 style={{ backgroundImage: `url("${mobileShot}")` }}
               />
               <span
@@ -192,7 +192,7 @@ export default function GuidePage() {
                 <b>03</b>切换版式
               </span>
               <span>
-                <b>04</b>保存图片
+                <b>04</b>存到相册
               </span>
               <span>
                 <b>05</b>复制文字

@@ -41,6 +41,9 @@ type PreparedChartShare =
   | { originalHref: string; status: "loading" | "error" }
   | { originalHref: string; status: "ready"; file: File };
 
+// The legacy key may contain a viewport-derived value. This key records only
+// an explicit layout choice made through the controls.
+const LAYOUT_PREFERENCE_KEY = "yixi-chart-layout-choice";
 const HEART_SUTRA_SECTIONS = HEART_SUTRA_DOCUMENT.sections;
 
 const HEART_SUTRA_COPY_TEXT = [
@@ -322,15 +325,11 @@ export default function Home() {
     const layoutFromUrl = params.get("layout");
     const viewFromUrl = params.get("view");
     const storedTheme = window.localStorage.getItem("yixi-chart-theme");
-    const storedLayout = window.localStorage.getItem("yixi-chart-layout");
+    const storedLayout = window.localStorage.getItem(LAYOUT_PREFERENCE_KEY);
     const systemTheme: ChartTheme = window.matchMedia("(prefers-color-scheme: dark)")
       .matches
       ? "dark"
       : "light";
-    const deviceLayout: YihuaLayoutMode = window.matchMedia("(max-width: 820px)")
-      .matches
-      ? "mobile"
-      : "desktop";
 
     const frame = window.requestAnimationFrame(() => {
       if (isChartId(chartFromUrl)) setChartId(chartFromUrl);
@@ -339,7 +338,7 @@ export default function Home() {
           ? layoutFromUrl
           : isLayoutMode(storedLayout)
             ? storedLayout
-            : deviceLayout,
+            : "desktop",
       );
       if (viewFromUrl === "heart-sutra") setActiveView("heart-sutra");
       setTheme(
@@ -417,7 +416,6 @@ export default function Home() {
   useEffect(() => {
     if (!preferencesReady) return;
     window.localStorage.setItem("yixi-chart-theme", theme);
-    window.localStorage.setItem("yixi-chart-layout", layoutMode);
     const url = new URL(window.location.href);
     url.searchParams.set("chart", chartId);
     url.searchParams.set("theme", theme);
@@ -714,6 +712,11 @@ export default function Home() {
     prepareView({ nextTheme });
   }
 
+  function chooseLayout(nextLayoutMode: YihuaLayoutMode) {
+    window.localStorage.setItem(LAYOUT_PREFERENCE_KEY, nextLayoutMode);
+    prepareView({ nextLayoutMode });
+  }
+
   function chartShareFile(option: DownloadOption) {
     const prepared = preparedChartFiles.current.get(option.originalHref);
     if (prepared) return Promise.resolve(prepared);
@@ -807,6 +810,9 @@ export default function Home() {
   function chooseDownloadOption(option: DownloadOption) {
     setCopyStatus("idle");
     setSaveStatus("idle");
+    if (option.layout) {
+      window.localStorage.setItem(LAYOUT_PREFERENCE_KEY, option.layout);
+    }
     prepareView({
       nextTheme: option.theme ?? theme,
       nextLayoutMode: option.layout ?? layoutMode,
@@ -1117,9 +1123,7 @@ export default function Home() {
                       ]
                         .filter(Boolean)
                         .join(" ")}
-                      onClick={() =>
-                        prepareView({ nextLayoutMode: value })
-                      }
+                      onClick={() => chooseLayout(value)}
                       onPointerEnter={() =>
                         warmView({ nextLayoutMode: value })
                       }
@@ -1166,7 +1170,7 @@ export default function Home() {
                             saveStatus !== "error")
                         }
                         onClick={saveChartToPhotoLibrary}
-                        aria-label={`将当前显示的${chart.title}图片保存到相册`}
+                        aria-label={`将当前显示的${chart.title}图片存到相册`}
                         title="打开系统菜单后选择“存储图像”"
                       >
                         <DownloadIcon />
@@ -1189,11 +1193,11 @@ export default function Home() {
                         className="action-button"
                         href={currentDownload.originalHref}
                         download={currentDownload.filename}
-                        aria-label={`下载当前显示的${chart.title}图片`}
+                        aria-label={`将当前显示的${chart.title}图片存到相册`}
                         title={`下载当前显示：${currentDownload.label}`}
                       >
                         <DownloadIcon />
-                        <span>保存</span>
+                        <span>存到相册</span>
                       </a>
                     )}
 
@@ -1257,11 +1261,7 @@ export default function Home() {
                     type="button"
                     onClick={() => void saveHeartSutraImage()}
                     disabled={saveStatus === "saving"}
-                    aria-label={
-                      canShareImageFiles
-                        ? `在手机上分享或将${HEART_SUTRA_DOCUMENT.title}保存到相册`
-                        : `下载${HEART_SUTRA_DOCUMENT.title}图片`
-                    }
+                    aria-label={`将${HEART_SUTRA_DOCUMENT.title}图片存到相册`}
                     title={
                       canShareImageFiles
                         ? "打开系统菜单，可选择“存储到照片”"
@@ -1274,9 +1274,9 @@ export default function Home() {
                         ? "生成中"
                         : saveStatus === "saved"
                           ? "已保存"
-                        : saveStatus === "error"
+                          : saveStatus === "error"
                             ? "保存失败"
-                            : "保存"}
+                            : "存到相册"}
                     </span>
                   </button>
                   <button
