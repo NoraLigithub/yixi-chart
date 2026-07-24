@@ -20,7 +20,7 @@ const steps = [
   {
     number: "02",
     title: "切换外观与版式",
-    copy: "右上角可切换「明 / 暗」；一花五叶谱还能选「横幅 / 长卷」。",
+    copy: "「明 / 暗」改变底色；「横幅」横向看全貌，「长卷」顺着页面向下读。",
     shotClass: styles.shotAppearance,
     shotAlt: "界面上方的明暗与横幅长卷切换按钮",
   },
@@ -55,8 +55,8 @@ export default function GuidePage() {
           </span>
         </a>
         <a className={styles.back} href={assetPath("/")}>
-          打开
-          <span aria-hidden="true">↗</span>
+          现在打开
+          <span aria-hidden="true">→</span>
         </a>
       </header>
 
@@ -69,18 +69,119 @@ export default function GuidePage() {
           </p>
         </section>
 
+        <section className={styles.overview} aria-labelledby="overview-title">
+          <div className={styles.overviewHeading}>
+            <p className={styles.eyebrow}>先看全貌</p>
+            <div>
+              <h2 id="overview-title">常用按钮都在页面上方</h2>
+              <p>
+                先认清按钮位置，再看下面四个局部步骤，使用时就不容易找错。
+              </p>
+            </div>
+          </div>
+          <figure className={styles.overviewFigure}>
+            <div
+              className={styles.overviewDesktopShot}
+              role="img"
+              aria-label="电脑版图谱页面全貌，内容选择、明暗、版式、保存与复制按钮都位于页面上方"
+              style={{
+                backgroundImage: `url("${assetPath("/guide/interface-desktop.jpg")}")`,
+              }}
+            />
+            <div
+              className={styles.overviewMobileShot}
+              role="img"
+              aria-label="手机版图谱页面上方全貌，展示内容选择、明暗、版式、保存与复制按钮的位置"
+              style={{
+                backgroundImage: `url("${assetPath("/guide/interface-mobile.jpg")}")`,
+              }}
+            />
+            <figcaption className={styles.overviewLegend}>
+              <span>
+                <b>01</b>选择内容
+              </span>
+              <span>
+                <b>02</b>明暗与版式
+              </span>
+              <span>
+                <b>03</b>保存图片
+              </span>
+              <span>
+                <b>04</b>复制文字
+              </span>
+            </figcaption>
+          </figure>
+        </section>
+
         <ol className={styles.steps}>
           {steps.map((step) => (
             <li key={step.number}>
               <div className={styles.visualStage}>
-                <div
-                  className={`${styles.detailShot} ${step.shotClass}`}
-                  role="img"
-                  aria-label={step.shotAlt}
-                  style={{
-                    backgroundImage: `url("${assetPath("/guide/interface-desktop.jpg")}")`,
-                  }}
-                />
+                {step.number === "02" ? (
+                  <div
+                    className={styles.appearanceDemo}
+                    role="group"
+                    aria-label="明暗色调与横幅长卷形状对照"
+                  >
+                    <div className={styles.comparePanel}>
+                      <div className={styles.themeSamples}>
+                        <div
+                          role="img"
+                          aria-label="浅色图谱局部"
+                          style={{
+                            backgroundImage: `url("${assetPath("/charts/previews/yihua-light-desktop.preview-999fd53db7.jpg")}")`,
+                          }}
+                        />
+                        <div
+                          role="img"
+                          aria-label="深色图谱局部"
+                          style={{
+                            backgroundImage: `url("${assetPath("/charts/previews/yihua-dark-desktop.preview-1746e4498f.jpg")}")`,
+                          }}
+                        />
+                      </div>
+                      <p>
+                        <span>明</span>
+                        <i aria-hidden="true">↔</i>
+                        <span>暗</span>
+                      </p>
+                    </div>
+                    <div className={styles.comparePanel}>
+                      <div className={styles.layoutSamples}>
+                        <div
+                          className={styles.bannerSample}
+                          role="img"
+                          aria-label="横幅图谱缩略图"
+                          style={{
+                            backgroundImage: `url("${assetPath("/charts/previews/yihua-light-desktop.preview-999fd53db7.jpg")}")`,
+                          }}
+                        />
+                        <div
+                          className={styles.scrollSample}
+                          role="img"
+                          aria-label="长卷图谱缩略图"
+                          style={{
+                            backgroundImage: `url("${assetPath("/charts/previews/yihua-light-mobile.preview-27390eafe2.jpg")}")`,
+                          }}
+                        />
+                      </div>
+                      <p>
+                        <span>横幅</span>
+                        <i aria-hidden="true">↔</i>
+                        <span>长卷</span>
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={`${styles.detailShot} ${step.shotClass}`}
+                    role="img"
+                    aria-label={step.shotAlt}
+                    style={{
+                      backgroundImage: `url("${assetPath("/guide/interface-desktop.jpg")}")`,
+                    }}
+                  />
+                )}
               </div>
               <div className={styles.stepBody}>
                 <span>{step.number}</span>
@@ -105,7 +206,10 @@ export default function GuidePage() {
 
         <footer className={styles.footer}>
           <p>明暗可选，版式可换，图片可存，文字可复制。</p>
-          <a href={assetPath("/")}>打开</a>
+          <a href={assetPath("/")}>
+            现在打开
+            <span aria-hidden="true">→</span>
+          </a>
         </footer>
       </article>
     </main>
