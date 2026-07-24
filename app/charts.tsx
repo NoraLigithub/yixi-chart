@@ -14,8 +14,8 @@ import {
 
 export type ChartId = "yihua" | "yunmen" | "atiyoga" | "yixi";
 export type ChartTheme = "light" | "dark";
-export type YihuaLayoutMode = "auto" | "desktop" | "mobile";
-export type YihuaResolvedLayout = Exclude<YihuaLayoutMode, "auto">;
+export type YihuaLayoutMode = "desktop" | "mobile";
+export type YihuaResolvedLayout = YihuaLayoutMode;
 
 export type ChartImageSource = {
   preview: string;

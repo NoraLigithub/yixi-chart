@@ -2,11 +2,11 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
+async function render(pathname = "/") {
   const worker = await loadWorker();
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request(`http://localhost${pathname}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -37,33 +37,34 @@ test("server-renders the static chart viewer", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>一夕<\/title>/i);
-  assert.match(html, /aria-label="一夕"/);
-  assert.doesNotMatch(html, /一夕典藏/);
-  assert.doesNotMatch(html, /图谱与典籍/);
+  assert.match(html, /aria-label="一夕典藏"/);
+  assert.match(html, /一夕典藏/);
+  assert.match(html, /图谱与典籍/);
   assert.match(html, /一花五叶谱/);
   assert.match(html, /云门与丹法/);
   assert.match(html, /阿的瑜伽/);
   assert.match(html, /id="library-tab-yixi"[^>]*>一夕<\/button>/);
   assert.doesNotMatch(html, /id="library-tab-yixi"[^>]*>一夕中道<\/button>/);
-  assert.match(html, /心经/);
-  assert.match(html, /浏览内容/);
-  assert.match(html, /选择内容/);
-  assert.doesNotMatch(html, /典藏分类/);
-  assert.doesNotMatch(html, /4 种/);
-  assert.doesNotMatch(html, /1 部/);
+  assert.match(html, /典藏分类/);
+  assert.match(html, /选择图谱/);
+  assert.match(html, /4 种/);
+  assert.match(html, /1 部/);
+  assert.doesNotMatch(html, /浏览内容/);
+  assert.doesNotMatch(html, /选择内容/);
   assert.match(html, /role="tab"/);
-  assert.match(html, /随屏幕自动选择图谱版式/);
+  assert.doesNotMatch(html, /随屏幕自动选择图谱版式/);
   assert.match(html, /切换为横幅图谱/);
   assert.match(html, /切换为长卷图谱/);
   assert.match(html, /复制一花五叶谱完整内容/);
   assert.match(html, /下载当前显示的一花五叶谱图片/);
   assert.match(html, />保存<\/span>/);
-  assert.match(html, /全屏查看一花五叶谱/);
+  assert.doesNotMatch(html, /全屏查看一花五叶谱/);
   assert.match(html, /选择一花五叶谱下载版本/);
   assert.match(html, /浅色 · 横幅/);
   assert.match(html, /深色 · 长卷/);
   assert.match(html, /切换为浅色模式/);
   assert.match(html, /切换为深色模式/);
+  assert.match(html, /href="\/guide"[^>]*aria-label="查看使用说明"/);
   assert.match(html, /五叶：沩仰宗、临济宗、曹洞宗、云门宗、法眼宗。/);
   assert.match(html, /六祖/);
   assert.match(html, /永明延寿/);
@@ -137,15 +138,18 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes("triggerImageDownload"));
   assert.ok(pageSource.includes("document.body.appendChild(link)"));
   assert.ok(pageSource.includes("window.setTimeout(() => link.remove(), 0)"));
-  assert.ok(pageSource.includes("immersive-viewer"));
-  assert.ok(pageSource.includes("immersiveActualSize"));
-  assert.ok(pageSource.includes("immersiveCanvasRef"));
-  assert.ok(pageSource.includes('aria-modal="true"'));
-  assert.ok(pageSource.includes('event.key === "Escape"'));
+  assert.ok(!pageSource.includes("immersive-viewer"));
+  assert.ok(!pageSource.includes("immersiveActualSize"));
+  assert.ok(!pageSource.includes("immersiveCanvasRef"));
+  assert.ok(!pageSource.includes('aria-modal="true"'));
+  assert.ok(!pageSource.includes('event.key === "Escape"'));
   assert.ok(
-    pageSource.includes("(canvas.scrollWidth - canvas.clientWidth) / 2"),
+    pageSource.includes("(viewport.scrollWidth - viewport.clientWidth) / 2"),
   );
-  assert.ok(pageSource.includes("全屏查看"));
+  assert.ok(pageSource.includes("chart-viewport--panorama"));
+  assert.ok(pageSource.includes("左右拖动查看横幅"));
+  assert.ok(pageSource.includes('"yixi-chart-layout"'));
+  assert.ok(!pageSource.includes("全屏查看"));
   assert.ok(!pageSource.includes('className="document-title"'));
 
   const heartSutraCopyControl =
@@ -171,12 +175,35 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes('label: "浅色"'));
   assert.ok(pageSource.includes('label: "深色"'));
   assert.ok(pageSource.includes('label: "原稿"'));
-  assert.ok(pageSource.includes('["auto", "随屏"]'));
+  assert.ok(!pageSource.includes('["auto", "随屏"]'));
   assert.ok(pageSource.includes('["desktop", "横幅"]'));
   assert.ok(pageSource.includes('["mobile", "长卷"]'));
   assert.match(pageSource, /download=\{currentDownload\.filename\}/);
   assert.match(pageSource, /download=\{option\.filename\}/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Starter Project/);
+});
+
+test("server-renders the concise illustrated guide", async () => {
+  const response = await render("/guide");
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
+
+  const html = await response.text();
+  assert.match(html, /<title>一夕典藏｜30 秒上手<\/title>/i);
+  assert.match(html, /点开即用，四处就够/);
+  assert.match(html, /明暗切换/);
+  assert.match(html, /横幅 \/ 长卷/);
+  assert.match(html, /保存图片/);
+  assert.match(html, /复制信息/);
+  assert.match(html, /手机与电脑自适应/);
+  assert.match(html, /interface-desktop\.jpg/);
+  assert.match(html, /interface-mobile\.jpg/);
+
+  await Promise.all(
+    ["interface-desktop.jpg", "interface-mobile.jpg"].map((file) =>
+      access(new URL(`../public/guide/${file}`, import.meta.url)),
+    ),
+  );
 });
 
 test("serves fingerprinted chart previews with a long browser cache", async () => {

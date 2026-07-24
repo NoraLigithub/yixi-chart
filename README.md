@@ -3,6 +3,7 @@
 一夕网页源码，收录传承图谱与经典原文。
 
 - 在线访问：<https://noraligithub.github.io/yixi-chart/>
+- 30 秒使用说明：<https://noraligithub.github.io/yixi-chart/guide/>
 - Node.js：`>=22.13.0`
 - 图谱规范数据：`content/charts/*.json`
 - 《心经》规范文本：`content/texts/heart-sutra.json`

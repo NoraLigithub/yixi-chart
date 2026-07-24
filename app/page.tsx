@@ -34,7 +34,6 @@ type DownloadOption = {
 };
 
 type LibraryView = "charts" | "heart-sutra";
-type LibraryTabId = ChartId | "heart-sutra";
 type ActionStatus = "idle" | "copied" | "saving" | "saved" | "error";
 
 const HEART_SUTRA_SECTIONS = HEART_SUTRA_DOCUMENT.sections;
@@ -142,11 +141,6 @@ const CHARTS: Chart[] = CHART_DOCUMENTS.map((document) => ({
   copyText: CHART_COPY_TEXT[document.id],
 }));
 
-const LIBRARY_TAB_IDS: LibraryTabId[] = [
-  ...CHARTS.map((item) => item.id),
-  "heart-sutra",
-];
-
 function DownloadIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -164,31 +158,6 @@ function CopyIcon() {
   );
 }
 
-function FullscreenIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" />
-    </svg>
-  );
-}
-
-function ActualSizeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="10.5" cy="10.5" r="6.5" />
-      <path d="m15.5 15.5 5 5M8 10.5h5M10.5 8v5" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="m5 5 14 14M19 5 5 19" />
-    </svg>
-  );
-}
-
 function isChartId(value: string | null): value is ChartId {
   return CHARTS.some((chart) => chart.id === value);
 }
@@ -198,7 +167,7 @@ function isTheme(value: string | null): value is ChartTheme {
 }
 
 function isLayoutMode(value: string | null): value is YihuaLayoutMode {
-  return value === "auto" || value === "desktop" || value === "mobile";
+  return value === "desktop" || value === "mobile";
 }
 
 function isShareCancellation(error: unknown) {
@@ -301,31 +270,20 @@ export default function Home() {
   const [activeView, setActiveView] = useState<LibraryView>("charts");
   const [chartId, setChartId] = useState<ChartId>("yihua");
   const [theme, setTheme] = useState<ChartTheme>("light");
-  const [layoutMode, setLayoutMode] = useState<YihuaLayoutMode>("auto");
-  const [autoLayoutTarget, setAutoLayoutTarget] =
-    useState<Exclude<YihuaLayoutMode, "auto">>("desktop");
-  const [viewportLayout, setViewportLayout] =
-    useState<YihuaResolvedLayout>("desktop");
-  const [viewportReady, setViewportReady] = useState(false);
+  const [layoutMode, setLayoutMode] = useState<YihuaLayoutMode>("desktop");
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [copyStatus, setCopyStatus] = useState<ActionStatus>("idle");
   const [saveStatus, setSaveStatus] = useState<ActionStatus>("idle");
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
   const [canShareImageFiles, setCanShareImageFiles] = useState(false);
-  const [headerCompact, setHeaderCompact] = useState(false);
-  const [immersiveOpen, setImmersiveOpen] = useState(false);
-  const [immersiveActualSize, setImmersiveActualSize] = useState(false);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const suppressChartOpen = useRef(false);
   const transitionSequence = useRef(0);
   const shareFileRequests = useRef(new Map<string, Promise<File>>());
-  const immersiveCloseRef = useRef<HTMLButtonElement>(null);
-  const immersiveCanvasRef = useRef<HTMLDivElement>(null);
+  const chartViewportRef = useRef<HTMLDivElement>(null);
   const chart = CHARTS.find((item) => item.id === chartId) ?? CHARTS[0];
   const downloadOptions = DOWNLOADS[chartId];
-  const displayedLayout: YihuaResolvedLayout =
-    layoutMode === "auto" ? autoLayoutTarget : layoutMode;
-  const viewerReady = preferencesReady && viewportReady;
+  const displayedLayout: YihuaResolvedLayout = layoutMode;
+  const viewerReady = preferencesReady;
   const currentDownload =
     chartId === "yihua"
       ? downloadOptions.find((option) =>
@@ -344,14 +302,25 @@ export default function Home() {
     const layoutFromUrl = params.get("layout");
     const viewFromUrl = params.get("view");
     const storedTheme = window.localStorage.getItem("yixi-chart-theme");
+    const storedLayout = window.localStorage.getItem("yixi-chart-layout");
     const systemTheme: ChartTheme = window.matchMedia("(prefers-color-scheme: dark)")
       .matches
       ? "dark"
       : "light";
+    const deviceLayout: YihuaLayoutMode = window.matchMedia("(max-width: 820px)")
+      .matches
+      ? "mobile"
+      : "desktop";
 
     const frame = window.requestAnimationFrame(() => {
       if (isChartId(chartFromUrl)) setChartId(chartFromUrl);
-      if (isLayoutMode(layoutFromUrl)) setLayoutMode(layoutFromUrl);
+      setLayoutMode(
+        isLayoutMode(layoutFromUrl)
+          ? layoutFromUrl
+          : isLayoutMode(storedLayout)
+            ? storedLayout
+            : deviceLayout,
+      );
       if (viewFromUrl === "heart-sutra") setActiveView("heart-sutra");
       setTheme(
         isTheme(themeFromUrl)
@@ -364,24 +333,6 @@ export default function Home() {
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, []);
-
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 820px)");
-    const initialTarget = media.matches ? "mobile" : "desktop";
-    const frame = window.requestAnimationFrame(() => {
-      setViewportLayout(initialTarget);
-      setAutoLayoutTarget(initialTarget);
-      setViewportReady(true);
-    });
-
-    const updateTarget = () =>
-      setViewportLayout(media.matches ? "mobile" : "desktop");
-    media.addEventListener("change", updateTarget);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      media.removeEventListener("change", updateTarget);
-    };
   }, []);
 
   useEffect(() => {
@@ -415,6 +366,7 @@ export default function Home() {
   useEffect(() => {
     if (!preferencesReady) return;
     window.localStorage.setItem("yixi-chart-theme", theme);
+    window.localStorage.setItem("yixi-chart-layout", layoutMode);
     const url = new URL(window.location.href);
     url.searchParams.set("chart", chartId);
     url.searchParams.set("theme", theme);
@@ -433,74 +385,30 @@ export default function Home() {
         ? document.getElementById("library-tab-heart-sutra")
         : document.getElementById(`library-tab-${chartId}`);
     activeTab?.scrollIntoView({ block: "nearest", inline: "center" });
-  }, [activeView, chartId, headerCompact]);
+  }, [activeView, chartId]);
 
   useEffect(() => {
-    let frame = 0;
-    const update = () => {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => {
-        setHeaderCompact(window.scrollY > 72);
+    if (
+      !viewerReady ||
+      chartId !== "yihua" ||
+      displayedLayout !== "desktop" ||
+      !window.matchMedia("(max-width: 820px)").matches
+    ) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const viewport = chartViewportRef.current;
+      if (!viewport) return;
+      viewport.scrollTo({
+        left: Math.max(0, (viewport.scrollWidth - viewport.clientWidth) / 2),
+        top: 0,
+        behavior: "auto",
       });
-    };
-
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", update);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!immersiveOpen) return;
-
-    const previousOverflow = document.body.style.overflow;
-    const focusFrame = window.requestAnimationFrame(() => {
-      immersiveCloseRef.current?.focus();
     });
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setImmersiveOpen(false);
-    };
 
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.cancelAnimationFrame(focusFrame);
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [immersiveOpen]);
-
-  useEffect(() => {
-    if (!viewerReady || autoLayoutTarget === viewportLayout) return;
-
-    if (chartId !== "yihua" || layoutMode !== "auto") return;
-
-    let cancelled = false;
-    const preview = getChartImageSource(
-      "yihua",
-      theme,
-      viewportLayout,
-    ).preview;
-
-    void preloadChartPreview(preview)
-      .catch(() => undefined)
-      .then(() => {
-        if (!cancelled) setAutoLayoutTarget(viewportLayout);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    autoLayoutTarget,
-    chartId,
-    layoutMode,
-    theme,
-    viewerReady,
-    viewportLayout,
-  ]);
+    return () => window.cancelAnimationFrame(frame);
+  }, [chartId, displayedLayout, viewerReady]);
 
   useEffect(() => {
     if (
@@ -555,10 +463,6 @@ export default function Home() {
     };
   }, [activeView, chartId, displayedLayout, theme, viewerReady]);
 
-  function resolvedLayout(nextLayoutMode: YihuaLayoutMode) {
-    return nextLayoutMode === "auto" ? viewportLayout : nextLayoutMode;
-  }
-
   function targetPreview({
     nextChart = chartId,
     nextTheme = theme,
@@ -571,7 +475,7 @@ export default function Home() {
     return getChartImageSource(
       nextChart,
       nextTheme,
-      resolvedLayout(nextLayoutMode),
+      nextLayoutMode,
     ).preview;
   }
 
@@ -627,7 +531,6 @@ export default function Home() {
     setActiveView("charts");
     setTheme(nextTheme);
     setLayoutMode(nextLayoutMode);
-    if (nextLayoutMode === "auto") setAutoLayoutTarget(viewportLayout);
     setPendingPreview(null);
 
     if (scrollToTop) {
@@ -638,14 +541,12 @@ export default function Home() {
   }
 
   function chooseChart(nextChart: ChartId) {
-    setImmersiveOpen(false);
     setCopyStatus("idle");
     setSaveStatus("idle");
     void prepareView({ nextChart, scrollToTop: true });
   }
 
   function chooseHeartSutra() {
-    setImmersiveOpen(false);
     transitionSequence.current += 1;
     setPendingPreview(null);
     setCopyStatus("idle");
@@ -654,6 +555,10 @@ export default function Home() {
     window.requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: "auto" });
     });
+  }
+
+  function chooseCharts() {
+    chooseChart(chartId);
   }
 
   function moveChart(offset: number) {
@@ -665,54 +570,31 @@ export default function Home() {
   function handleTabKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
-    const activeId: LibraryTabId =
-      activeView === "heart-sutra" ? "heart-sutra" : chartId;
-    const index = LIBRARY_TAB_IDS.indexOf(activeId);
+    if (activeView !== "charts") return;
+    const tabIds = CHARTS.map((item) => item.id);
+    const index = tabIds.indexOf(chartId);
     const offset = event.key === "ArrowRight" ? 1 : -1;
-    const nextIndex =
-      (index + offset + LIBRARY_TAB_IDS.length) % LIBRARY_TAB_IDS.length;
-    const nextId = LIBRARY_TAB_IDS[nextIndex];
-    if (nextId === "heart-sutra") {
-      chooseHeartSutra();
-    } else {
-      chooseChart(nextId);
-    }
+    const nextIndex = (index + offset + tabIds.length) % tabIds.length;
+    const nextId = tabIds[nextIndex];
+    chooseChart(nextId);
     window.requestAnimationFrame(() => {
       document.getElementById(`library-tab-${nextId}`)?.focus();
     });
   }
 
-  function openImmersiveView() {
-    setImmersiveActualSize(false);
-    setImmersiveOpen(true);
-  }
-
-  function toggleImmersiveSize() {
-    setImmersiveActualSize((value) => {
-      const nextValue = !value;
-      window.requestAnimationFrame(() => {
-        const canvas = immersiveCanvasRef.current;
-        if (!canvas) return;
-        canvas.scrollTo({
-          left: nextValue
-            ? Math.max(0, (canvas.scrollWidth - canvas.clientWidth) / 2)
-            : 0,
-          top: 0,
-          behavior: "auto",
-        });
-      });
-      return nextValue;
-    });
-  }
-
-  function handleChartSurfaceClick(event: React.MouseEvent<HTMLDivElement>) {
-    if (suppressChartOpen.current) {
-      suppressChartOpen.current = false;
-      return;
+  function handleModeKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    const nextView: LibraryView =
+      activeView === "charts" ? "heart-sutra" : "charts";
+    if (nextView === "charts") {
+      chooseCharts();
+    } else {
+      chooseHeartSutra();
     }
-    if ((event.target as HTMLElement).closest("button, a")) return;
-    if (window.getSelection()?.toString()) return;
-    openImmersiveView();
+    window.requestAnimationFrame(() => {
+      document.getElementById(`collection-mode-${nextView}`)?.focus();
+    });
   }
 
   function handleTouchStart(event: React.TouchEvent<HTMLElement>) {
@@ -725,6 +607,12 @@ export default function Home() {
 
   function handleTouchEnd(event: React.TouchEvent<HTMLElement>) {
     if (activeView !== "charts") return;
+    if (
+      (event.target as HTMLElement).closest(".chart-viewport--panorama")
+    ) {
+      touchStart.current = null;
+      return;
+    }
     const start = touchStart.current;
     touchStart.current = null;
     if (!start || event.changedTouches.length !== 1) return;
@@ -732,10 +620,6 @@ export default function Home() {
     const deltaX = event.changedTouches[0].clientX - start.x;
     const deltaY = event.changedTouches[0].clientY - start.y;
     if (Math.abs(deltaX) < 56 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
-    suppressChartOpen.current = true;
-    window.setTimeout(() => {
-      suppressChartOpen.current = false;
-    }, 500);
     moveChart(deltaX < 0 ? 1 : -1);
   }
 
@@ -967,71 +851,41 @@ export default function Home() {
 
   return (
     <main className="viewer" data-theme={theme} data-view={activeView}>
-      <header
-        className={`library-header ${headerCompact ? "is-compact" : ""}`}
-      >
-        <div className="brand" aria-label="一夕">
+      <header className="library-header">
+        <div className="brand" aria-label="一夕典藏">
           <span className="brand-seal" aria-hidden="true">
             一夕
           </span>
+          <span className="brand-copy">
+            <strong>一夕典藏</strong>
+            <small>图谱与典籍</small>
+          </span>
         </div>
 
-        <div
-          className="collection-navigation"
-          role="group"
-          aria-label="浏览内容"
-        >
-          <nav
-            className="collection-tabs"
-            role="tablist"
-            aria-label="选择内容"
+        <nav className="collection-modes" aria-label="典藏分类">
+          <button
+            id="collection-mode-charts"
+            className={activeView === "charts" ? "is-active" : ""}
+            type="button"
+            aria-pressed={activeView === "charts"}
+            onClick={chooseCharts}
+            onKeyDown={handleModeKeyDown}
           >
-            {CHARTS.map((item) => {
-              const isActive = activeView === "charts" && chartId === item.id;
-              const isLoading =
-                pendingPreview === targetPreview({ nextChart: item.id });
-
-              return (
-                <button
-                  id={`library-tab-${item.id}`}
-                  className={[
-                    isActive ? "is-active" : "",
-                    isLoading ? "is-loading" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-busy={isLoading}
-                  aria-controls="active-library-panel"
-                  tabIndex={isActive ? 0 : -1}
-                  onClick={() => chooseChart(item.id)}
-                  onPointerEnter={() => warmView({ nextChart: item.id })}
-                  onTouchStart={() => warmView({ nextChart: item.id })}
-                  onFocus={() => warmView({ nextChart: item.id })}
-                  onKeyDown={handleTabKeyDown}
-                  key={item.id}
-                >
-                  {item.shortTitle}
-                </button>
-              );
-            })}
-            <button
-              id="library-tab-heart-sutra"
-              className={activeView === "heart-sutra" ? "is-active" : ""}
-              type="button"
-              role="tab"
-              aria-selected={activeView === "heart-sutra"}
-              aria-controls="active-library-panel"
-              tabIndex={activeView === "heart-sutra" ? 0 : -1}
-              onClick={chooseHeartSutra}
-              onKeyDown={handleTabKeyDown}
-            >
-              心经
-            </button>
-          </nav>
-        </div>
+            <span>图谱</span>
+            <small>{`${CHARTS.length} 种`}</small>
+          </button>
+          <button
+            id="collection-mode-heart-sutra"
+            className={activeView === "heart-sutra" ? "is-active" : ""}
+            type="button"
+            aria-pressed={activeView === "heart-sutra"}
+            onClick={chooseHeartSutra}
+            onKeyDown={handleModeKeyDown}
+          >
+            <span>典籍</span>
+            <small>1 部</small>
+          </button>
+        </nav>
 
         <div className="theme-picker" aria-label="页面主题">
           <div className="segmented-control">
@@ -1062,7 +916,70 @@ export default function Home() {
               </button>
             ))}
           </div>
+          <a
+            className="guide-entry"
+            href={assetPath("/guide")}
+            aria-label="查看使用说明"
+          >
+            <span className="guide-entry-label">说明</span>
+            <span className="guide-entry-mark" aria-hidden="true">
+              ?
+            </span>
+          </a>
         </div>
+
+        <nav
+          className="collection-tabs"
+          role="tablist"
+          aria-label={activeView === "charts" ? "选择图谱" : "选择典籍"}
+        >
+          {activeView === "charts" ? (
+            CHARTS.map((item) => {
+              const isActive = chartId === item.id;
+              const isLoading =
+                pendingPreview === targetPreview({ nextChart: item.id });
+
+              return (
+                <button
+                  id={`library-tab-${item.id}`}
+                  className={[
+                    isActive ? "is-active" : "",
+                    isLoading ? "is-loading" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-busy={isLoading}
+                  aria-controls="active-library-panel"
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => chooseChart(item.id)}
+                  onPointerEnter={() => warmView({ nextChart: item.id })}
+                  onTouchStart={() => warmView({ nextChart: item.id })}
+                  onFocus={() => warmView({ nextChart: item.id })}
+                  onKeyDown={handleTabKeyDown}
+                  key={item.id}
+                >
+                  {item.shortTitle}
+                </button>
+              );
+            })
+          ) : (
+            <button
+              id="library-tab-heart-sutra"
+              className="is-active"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="active-library-panel"
+              tabIndex={0}
+              onClick={chooseHeartSutra}
+            >
+              {HEART_SUTRA_DOCUMENT.title}
+            </button>
+          )}
+        </nav>
       </header>
 
       <section
@@ -1092,7 +1009,6 @@ export default function Home() {
                 <div className="segmented-control segmented-control--layout">
                   {(
                     [
-                      ["auto", "随屏"],
                       ["desktop", "横幅"],
                       ["mobile", "长卷"],
                     ] as const
@@ -1126,9 +1042,7 @@ export default function Home() {
                         targetPreview({ nextLayoutMode: value })
                       }
                       aria-label={
-                        value === "auto"
-                          ? "随屏幕自动选择图谱版式"
-                          : `切换为${label}图谱`
+                        `切换为${label}图谱`
                       }
                       key={value}
                     >
@@ -1281,37 +1195,40 @@ export default function Home() {
             className={`chart-surface chart-surface--${chartId}`}
             key={chartId}
           >
+            {chartId === "yihua" && displayedLayout === "desktop" && (
+              <p className="panorama-hint" aria-hidden="true">
+                左右拖动查看横幅
+              </p>
+            )}
             <div
+              ref={chartViewportRef}
               className={[
-                "chart-open-area",
-                `chart-open-area--${chartId}`,
-                chartId === "yihua" && displayedLayout === "mobile"
-                  ? "chart-open-area--mobile-long"
+                "chart-viewport",
+                chartId === "yihua" && displayedLayout === "desktop"
+                  ? "chart-viewport--panorama"
                   : "",
               ]
                 .filter(Boolean)
                 .join(" ")}
-              onClick={handleChartSurfaceClick}
             >
-              <ChartContent
-                chartId={chartId}
-                theme={theme}
-                layout={displayedLayout}
-                ready={viewerReady}
-              />
-              <button
-                className="fullscreen-cue"
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  openImmersiveView();
-                }}
-                aria-label={`全屏查看${chart.title}`}
-                title="全屏查看"
+              <div
+                className={[
+                  "chart-frame",
+                  `chart-frame--${chartId}`,
+                chartId === "yihua" && displayedLayout === "mobile"
+                    ? "chart-frame--mobile-long"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
               >
-                <FullscreenIcon />
-                <span>全屏</span>
-              </button>
+                <ChartContent
+                  chartId={chartId}
+                  theme={theme}
+                  layout={displayedLayout}
+                  ready={viewerReady}
+                />
+              </div>
             </div>
             {chart.note && <p className="chart-caption">{chart.note}</p>}
           </div>
@@ -1368,81 +1285,6 @@ export default function Home() {
                       : ""}
         </p>
       </section>
-
-      {immersiveOpen && activeView === "charts" && (
-        <div
-          className="immersive-viewer"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`全屏查看${chart.title}`}
-        >
-          <div className="immersive-toolbar">
-            <strong>{chart.title}</strong>
-            <div className="immersive-actions">
-              <button
-                className="immersive-action"
-                type="button"
-                onClick={toggleImmersiveSize}
-                aria-pressed={immersiveActualSize}
-                aria-label={
-                  immersiveActualSize ? "适应屏幕查看" : "按原大查看"
-                }
-              >
-                <ActualSizeIcon />
-                <span>{immersiveActualSize ? "适应" : "原大"}</span>
-              </button>
-              <a
-                className="immersive-action"
-                href={currentDownload.href}
-                download={currentDownload.filename}
-                onPointerDown={() => warmChartShare(currentDownload)}
-                onClick={(event) =>
-                  void shareOrDownloadChart(event, currentDownload)
-                }
-                aria-label={`保存${chart.title}图片`}
-              >
-                <DownloadIcon />
-                <span>保存</span>
-              </a>
-              <button
-                className="immersive-action"
-                type="button"
-                onClick={copyAllText}
-                aria-label={`复制${chart.title}完整内容`}
-              >
-                <CopyIcon />
-                <span>{copyStatus === "copied" ? "已复制" : "复制"}</span>
-              </button>
-              <button
-                ref={immersiveCloseRef}
-                className="immersive-action"
-                type="button"
-                onClick={() => setImmersiveOpen(false)}
-                aria-label="关闭全屏查看"
-              >
-                <CloseIcon />
-                <span>关闭</span>
-              </button>
-            </div>
-          </div>
-          <div
-            ref={immersiveCanvasRef}
-            className={`immersive-canvas ${
-              immersiveActualSize ? "is-actual" : ""
-            }`}
-            onClick={toggleImmersiveSize}
-          >
-            {/* The immersive view uses the approved downloadable original. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="immersive-image"
-              src={currentDownload.href}
-              alt={chart.title}
-              draggable={false}
-            />
-          </div>
-        </div>
-      )}
     </main>
   );
 }
