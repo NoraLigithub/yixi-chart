@@ -207,20 +207,26 @@ test("server-renders the concise illustrated guide", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>一夕｜30 秒上手<\/title>/i);
-  assert.match(html, /四步看懂，打开就会/);
+  assert.match(html, /现在打开图谱与典籍/);
+  assert.match(html, /五步看懂，打开就会/);
+  assert.match(html, /跟着红圈找按钮/);
+  assert.match(html, /五个红圈分别标出内容选择、明暗、版式、保存与复制按钮/);
   assert.match(html, /选择内容/);
-  assert.match(html, /切换外观与版式/);
-  assert.match(html, /首次加载速度较慢，请耐心等待/);
-  assert.match(html, /横幅适合电脑、iPad，长卷适合手机/);
+  assert.match(html, /切换明暗/);
+  assert.match(html, /切换版式/);
+  assert.match(html, /第一次打开请稍等片刻/);
+  assert.match(html, /「横幅」适合电脑、iPad/);
+  assert.match(html, /红圈标出的右上角明暗切换按钮/);
   assert.match(html, /保存图片/);
   assert.match(html, /手机、iPad 在系统菜单选择「存储图像」/);
   assert.match(html, /电脑会直接下载/);
   assert.match(html, /复制文字/);
   assert.match(html, /手机也一样/);
   assert.match(html, /interface-desktop\.jpg/);
-  assert.doesNotMatch(html, /一夕典藏|打开典藏|现在打开一夕典藏/);
+  assert.match(html, /interface-mobile\.jpg/);
 
   await access(new URL("../public/guide/interface-desktop.jpg", import.meta.url));
+  await access(new URL("../public/guide/interface-mobile.jpg", import.meta.url));
 });
 
 test("serves fingerprinted chart previews with a long browser cache", async () => {
