@@ -36,28 +36,29 @@ test("server-renders the static chart viewer", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>一夕典藏 · 图谱与典籍<\/title>/i);
-  assert.match(html, /一夕典藏/);
-  assert.match(html, /图谱与典籍/);
+  assert.match(html, /<title>一夕<\/title>/i);
+  assert.match(html, /aria-label="一夕"/);
+  assert.doesNotMatch(html, /一夕典藏/);
+  assert.doesNotMatch(html, /图谱与典籍/);
   assert.match(html, /一花五叶谱/);
   assert.match(html, /云门与丹法/);
   assert.match(html, /阿的瑜伽/);
   assert.match(html, /id="library-tab-yixi"[^>]*>一夕<\/button>/);
   assert.doesNotMatch(html, /id="library-tab-yixi"[^>]*>一夕中道<\/button>/);
   assert.match(html, /心经/);
-  assert.match(html, /浏览典藏/);
-  assert.match(html, /典藏分类/);
-  assert.match(html, /选择图谱/);
-  assert.match(html, /4 种/);
-  assert.match(html, /1 部/);
+  assert.match(html, /浏览内容/);
+  assert.match(html, /选择内容/);
+  assert.doesNotMatch(html, /典藏分类/);
+  assert.doesNotMatch(html, /4 种/);
+  assert.doesNotMatch(html, /1 部/);
   assert.match(html, /role="tab"/);
   assert.match(html, /随屏幕自动选择图谱版式/);
   assert.match(html, /切换为横幅图谱/);
   assert.match(html, /切换为长卷图谱/);
-  assert.match(html, /复制一花五叶谱图谱数据（YAML）/);
-  assert.match(html, /复制图谱数据/);
+  assert.match(html, /复制一花五叶谱完整内容/);
   assert.match(html, /下载当前显示的一花五叶谱图片/);
-  assert.match(html, /保存图片/);
+  assert.match(html, />保存<\/span>/);
+  assert.match(html, /全屏查看一花五叶谱/);
   assert.match(html, /选择一花五叶谱下载版本/);
   assert.match(html, /浅色 · 横幅/);
   assert.match(html, /深色 · 长卷/);
@@ -116,7 +117,11 @@ test("server-renders the static chart viewer", async () => {
     ),
   );
   assert.ok(pageSource.includes("HEART_SUTRA_DOCUMENT.title"));
-  assert.ok(pageSource.includes("复制全文"));
+  assert.ok(
+    pageSource.includes(
+      "aria-label={`复制${HEART_SUTRA_DOCUMENT.title}全文`}",
+    ),
+  );
   assert.ok(pageSource.includes("`下载${HEART_SUTRA_DOCUMENT.title}图片`"));
   assert.ok(!pageSource.includes("保存为图片"));
   assert.ok(pageSource.includes('theme === "dark" ? "深色版" : "浅色版"'));
@@ -126,10 +131,22 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes('navigator.platform === "MacIntel"'));
   assert.ok(pageSource.includes("navigator.canShare({ files: [probe] })"));
   assert.ok(pageSource.includes("await navigator.share({"));
-  assert.ok(pageSource.includes('"保存图片"'));
+  assert.ok(pageSource.includes("<span>保存</span>"));
   assert.ok(!pageSource.includes('"存到手机"'));
   assert.ok(!pageSource.includes('"下载图片"'));
   assert.ok(pageSource.includes("triggerImageDownload"));
+  assert.ok(pageSource.includes("document.body.appendChild(link)"));
+  assert.ok(pageSource.includes("window.setTimeout(() => link.remove(), 0)"));
+  assert.ok(pageSource.includes("immersive-viewer"));
+  assert.ok(pageSource.includes("immersiveActualSize"));
+  assert.ok(pageSource.includes("immersiveCanvasRef"));
+  assert.ok(pageSource.includes('aria-modal="true"'));
+  assert.ok(pageSource.includes('event.key === "Escape"'));
+  assert.ok(
+    pageSource.includes("(canvas.scrollWidth - canvas.clientWidth) / 2"),
+  );
+  assert.ok(pageSource.includes("全屏查看"));
+  assert.ok(!pageSource.includes('className="document-title"'));
 
   const heartSutraCopyControl =
     "aria-label={`复制${HEART_SUTRA_DOCUMENT.title}全文`}";
@@ -138,7 +155,7 @@ test("server-renders the static chart viewer", async () => {
     pageSource.indexOf(heartSutraCopyControl) + 300,
   );
   assert.ok(
-    heartSutraActions.indexOf('"保存图片"') <
+    heartSutraActions.indexOf("saveHeartSutraImage") <
       heartSutraActions.indexOf(heartSutraCopyControl),
     "Heart Sutra actions put image saving before copy",
   );

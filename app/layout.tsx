@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-const title = "一夕典藏 · 图谱与典籍";
+const title = "一夕";
 const description =
-  "一夕典藏收录传承图谱与经典原文，包括《般若波罗蜜多心经》。";
+  "一夕收录传承图谱与经典原文，包括《般若波罗蜜多心经》。";
 
 function metadata(baseUrl: URL): Metadata {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -13,11 +13,11 @@ function metadata(baseUrl: URL): Metadata {
     metadataBase: baseUrl,
     title,
     description,
-    applicationName: "一夕典藏",
+    applicationName: "一夕",
     appleWebApp: {
       capable: true,
       statusBarStyle: "default",
-      title: "一夕典藏",
+      title: "一夕",
     },
     formatDetection: {
       telephone: false,
