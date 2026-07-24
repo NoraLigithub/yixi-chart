@@ -6,9 +6,9 @@ const PREVIEWS = {
   "atiyoga-dark.jpg": "atiyoga-dark.preview-aca88a423d.jpg",
   "atiyoga-light.jpg": "atiyoga-light.preview-de58ed054c.jpg",
   "yihua-dark-desktop.jpg": "yihua-dark-desktop.preview-1746e4498f.jpg",
-  "yihua-dark-mobile.jpg": "yihua-dark-mobile.preview-9cdd1f5393.jpg",
+  "yihua-dark-mobile.jpg": "yihua-dark-mobile.preview-3038ff0ead.jpg",
   "yihua-light-desktop.jpg": "yihua-light-desktop.preview-999fd53db7.jpg",
-  "yihua-light-mobile.jpg": "yihua-light-mobile.preview-0aab9fae27.jpg",
+  "yihua-light-mobile.jpg": "yihua-light-mobile.preview-27390eafe2.jpg",
   "yixi-original.jpg": "yixi-original.preview-bd6a1780d1.jpg",
   "yunmen-dark.jpg": "yunmen-dark.preview-03d89d4b6e.jpg",
   "yunmen-light.jpg": "yunmen-light.preview-ef8bb6fe18.jpg",
@@ -52,4 +52,19 @@ test("the viewer preloads and decodes only a bounded number of previews", async 
       access(new URL(`../public/charts/previews/${preview}`, import.meta.url)),
     ),
   );
+});
+
+test("the Shitou and Yaoshan mobile artwork stays on one vertical axis", async () => {
+  const [chartSource, generatorSource] = await Promise.all([
+    readFile(new URL("../app/charts.tsx", import.meta.url), "utf8"),
+    readFile(
+      new URL("../../scripts/generate_mobile_long.py", import.meta.url),
+      "utf8",
+    ),
+  ]);
+
+  assert.match(chartSource, /n8:\s*\[720,\s*1560\]/);
+  assert.match(chartSource, /n11:\s*\[720,\s*1820\]/);
+  assert.match(generatorSource, /"n8":\s*720/);
+  assert.match(generatorSource, /"n11":\s*720/);
 });

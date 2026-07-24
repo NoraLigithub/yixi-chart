@@ -11,11 +11,11 @@ const EXPECTED_SHA256 = {
   "yihua-dark-desktop.jpg":
     "283eb541d7297d34efa6af239476a2e8f442ded3bc1ce9b4c063e3131d91c00e",
   "yihua-dark-mobile.jpg":
-    "3673f3685c44d725526c416dbbb2930f0b7172562b1e0b98605a95060556e5f8",
+    "e153d6712cf83ae23f8becd35a3282cd51081a1ac9ed40b4afb5fcda4e0d84fa",
   "yihua-light-desktop.jpg":
     "f5034c1ab5b7b1764a1354bd0155d1fb35b6b8eafc794fc5d6a8e7825a252f9b",
   "yihua-light-mobile.jpg":
-    "ec61fff161edf0ad7a0ae33d1d19b311ea68d25cd03a2c5025b6b0276a510388",
+    "fd7f5e7f8c794998fde3ceba4f5f23de573e8dd55b6817650885e7fce64f15b3",
   "yixi-original.jpg":
     "5963ea24e158f44ed78242f8ff93460779a0c9d7af45f9a0a0f2717150c6375c",
   "yunmen-dark.jpg":
