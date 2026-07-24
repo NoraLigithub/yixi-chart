@@ -39,8 +39,21 @@ test("the viewer preloads and decodes only a bounded number of previews", async 
     readFile(new URL("../app/charts.tsx", import.meta.url), "utf8"),
   ]);
 
+  const prepareViewSource = pageSource.slice(
+    pageSource.indexOf("function prepareView"),
+    pageSource.indexOf("function chooseChart"),
+  );
+
   assert.match(pageSource, /MAX_DECODED_PREVIEWS = 3/);
-  assert.match(pageSource, /await preloadChartPreview\(preview\)/);
+  assert.doesNotMatch(
+    prepareViewSource,
+    /await preloadChartPreview\(preview\)/,
+  );
+  assert.ok(
+    prepareViewSource.indexOf("setChartId(nextChart)") <
+      prepareViewSource.indexOf("void preloadChartPreview(preview)"),
+    "chart selection should update before preview loading finishes",
+  );
   assert.match(pageSource, /connection\?\.saveData/);
   assert.match(pageSource, /effectiveType\?\.includes\("2g"\)/);
   assert.match(pageSource, /requestIdleCallback/);
@@ -67,4 +80,19 @@ test("the Shitou and Yaoshan mobile artwork stays on one vertical axis", async (
   assert.match(chartSource, /n11:\s*\[720,\s*1820\]/);
   assert.match(generatorSource, /"n8":\s*720/);
   assert.match(generatorSource, /"n11":\s*720/);
+});
+
+test("the guide warms chart previews and originals without blocking reading", async () => {
+  const warmerSource = await readFile(
+    new URL("../app/guide/chart-cache-warmer.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(warmerSource, /CHART_PREVIEWS/);
+  assert.match(warmerSource, /CHART_ORIGINAL_FILENAMES/);
+  assert.match(warmerSource, /requestIdleCallback/);
+  assert.match(warmerSource, /cache: "force-cache"/);
+  assert.match(warmerSource, /priority: "low"/);
+  assert.match(warmerSource, /connection\?\.saveData/);
+  assert.match(warmerSource, /effectiveType\?\.includes\("2g"\)/);
 });

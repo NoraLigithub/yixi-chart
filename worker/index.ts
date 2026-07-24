@@ -22,7 +22,11 @@ interface ExecutionContext {
 const CHART_PREVIEW_PREFIX = "/chart-preview/";
 const HASHED_CHART_PREVIEW = /^[a-z0-9-]+\.preview-[a-f0-9]{10}\.jpg$/;
 
-async function serveChartPreview(request: Request, env: Env, filename: string) {
+async function serveChartPreview(
+  request: Request,
+  env: Env | undefined,
+  filename: string,
+) {
   if (!HASHED_CHART_PREVIEW.test(filename)) {
     return new Response("Invalid chart preview", { status: 400 });
   }
@@ -31,7 +35,7 @@ async function serveChartPreview(request: Request, env: Env, filename: string) {
     `/charts/previews/${filename}`,
     request.url,
   );
-  if (!env.ASSETS) {
+  if (!env?.ASSETS) {
     return Response.redirect(assetUrl, 307);
   }
 
@@ -60,7 +64,11 @@ async function serveChartPreview(request: Request, env: Env, filename: string) {
 // const imageConfig: ImageConfig = { dangerouslyAllowSVG: true };
 
 const worker = {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(
+    request: Request,
+    env: Env | undefined,
+    ctx: ExecutionContext,
+  ): Promise<Response> {
     const url = new URL(request.url);
 
     if (url.pathname.startsWith(CHART_PREVIEW_PREFIX)) {
@@ -72,7 +80,7 @@ const worker = {
     }
 
     if (url.pathname === "/_vinext/image") {
-      if (!env.ASSETS) {
+      if (!env?.ASSETS) {
         return new Response("Static assets are unavailable", { status: 503 });
       }
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
@@ -85,7 +93,7 @@ const worker = {
       }, allowedWidths);
     }
 
-    return handler.fetch(request, env, ctx);
+    return handler.fetch(request, env as Env, ctx);
   },
 };
 

@@ -512,23 +512,27 @@ button:disabled {
   box-shadow: 0 18px 48px rgba(26, 19, 14, 0.2);
 }
 
-.download-control a {
+.download-control button {
   display: flex;
+  width: 100%;
   gap: 16px;
   align-items: center;
   justify-content: space-between;
   padding: 10px 11px;
+  border: 0;
   color: var(--ink);
+  background: transparent;
+  cursor: pointer;
   font-size: 12px;
   text-decoration: none;
   white-space: nowrap;
 }
 
-.download-control a:hover {
+.download-control button:hover {
   background: var(--control-active);
 }
 
-.download-control a[aria-current="true"]::after {
+.download-control button[aria-current="true"]::after {
   color: var(--accent);
   content: "当前";
   font-size: 9px;

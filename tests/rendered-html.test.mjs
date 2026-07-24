@@ -59,7 +59,7 @@ test("server-renders the static chart viewer", async () => {
   assert.match(html, /下载当前显示的一花五叶谱图片/);
   assert.match(html, />保存<\/span>/);
   assert.doesNotMatch(html, /全屏查看一花五叶谱/);
-  assert.match(html, /选择一花五叶谱下载版本/);
+  assert.match(html, /选择一花五叶谱显示与下载版本/);
   assert.match(html, /浅色 · 横幅/);
   assert.match(html, /深色 · 长卷/);
   assert.match(html, /切换为浅色模式/);
@@ -74,7 +74,6 @@ test("server-renders the static chart viewer", async () => {
   assert.doesNotMatch(html, /<img\b/i);
   assert.doesNotMatch(html, /facsimile-chart--mobile-long/);
   assert.match(html, /yihua-light-desktop\.jpg/);
-  assert.match(html, /yihua-light-mobile\.jpg/);
   assert.doesNotMatch(html, /HTML 文字可复制/);
   assert.doesNotMatch(html, /图谱中的文字可以直接拖选复制/);
   const downloadFiles = [
@@ -132,6 +131,14 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes('navigator.platform === "MacIntel"'));
   assert.ok(pageSource.includes("navigator.canShare({ files: [probe] })"));
   assert.ok(pageSource.includes("await navigator.share({"));
+  assert.ok(pageSource.includes("saveChartToPhotoLibrary"));
+  assert.ok(pageSource.includes("navigator.share() must be called synchronously"));
+  assert.ok(
+    pageSource.includes(
+      "aria-label={`将当前显示的${chart.title}图片保存到相册`}",
+    ),
+  );
+  assert.ok(pageSource.includes('"存到相册"'));
   assert.ok(pageSource.includes("<span>保存</span>"));
   assert.ok(!pageSource.includes('"存到手机"'));
   assert.ok(!pageSource.includes('"下载图片"'));
@@ -179,7 +186,17 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes('["desktop", "横幅"]'));
   assert.ok(pageSource.includes('["mobile", "长卷"]'));
   assert.match(pageSource, /download=\{currentDownload\.filename\}/);
-  assert.match(pageSource, /download=\{option\.filename\}/);
+  assert.ok(pageSource.includes("chooseDownloadOption(option)"));
+  assert.ok(pageSource.includes("nextTheme: option.theme ?? theme"));
+  assert.ok(pageSource.includes("nextLayoutMode: option.layout ?? layoutMode"));
+  assert.match(pageSource, /originalHref: assetPath\("\/charts\//);
+  assert.match(pageSource, /fetch\(option\.originalHref\)/);
+  assert.match(pageSource, /href=\{currentDownload\.originalHref\}/);
+  assert.doesNotMatch(
+    pageSource,
+    /originalHref: assetPath\("\/charts\/previews\//,
+  );
+  assert.doesNotMatch(pageSource, /shareOrDownloadChart/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Starter Project/);
 });
 
@@ -189,21 +206,18 @@ test("server-renders the concise illustrated guide", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>一夕典藏｜30 秒上手<\/title>/i);
-  assert.match(html, /点开即用，四处就够/);
-  assert.match(html, /明暗切换/);
-  assert.match(html, /横幅 \/ 长卷/);
+  assert.match(html, /<title>一夕｜30 秒上手<\/title>/i);
+  assert.match(html, /四步看懂，打开就会/);
+  assert.match(html, /选择内容/);
+  assert.match(html, /切换外观与版式/);
   assert.match(html, /保存图片/);
-  assert.match(html, /复制信息/);
-  assert.match(html, /手机与电脑自适应/);
+  assert.match(html, /iPad 在系统菜单选择「存储图像」/);
+  assert.match(html, /复制文字/);
+  assert.match(html, /手机也一样/);
   assert.match(html, /interface-desktop\.jpg/);
-  assert.match(html, /interface-mobile\.jpg/);
+  assert.doesNotMatch(html, /一夕典藏|打开典藏|现在打开一夕典藏/);
 
-  await Promise.all(
-    ["interface-desktop.jpg", "interface-mobile.jpg"].map((file) =>
-      access(new URL(`../public/guide/${file}`, import.meta.url)),
-    ),
-  );
+  await access(new URL("../public/guide/interface-desktop.jpg", import.meta.url));
 });
 
 test("serves fingerprinted chart previews with a long browser cache", async () => {
@@ -239,13 +253,13 @@ test("serves fingerprinted chart previews with a long browser cache", async () =
   assert.equal(await response.text(), "preview-bytes");
 });
 
-test("redirects chart previews to static assets when the local binding is absent", async () => {
+test("redirects chart previews to static assets when the runtime environment is absent", async () => {
   const worker = await loadWorker();
   const response = await worker.fetch(
     new Request(
       "http://localhost/chart-preview/yixi-original.preview-bd6a1780d1.jpg",
     ),
-    {},
+    undefined,
     executionContext,
   );
 

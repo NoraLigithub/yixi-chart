@@ -28,13 +28,18 @@ type Chart = {
 };
 
 type DownloadOption = {
-  href: string;
+  originalHref: string;
   filename: string;
   label: string;
+  theme?: ChartTheme;
+  layout?: YihuaResolvedLayout;
 };
 
 type LibraryView = "charts" | "heart-sutra";
 type ActionStatus = "idle" | "copied" | "saving" | "saved" | "error";
+type PreparedChartShare =
+  | { originalHref: string; status: "loading" | "error" }
+  | { originalHref: string; status: "ready"; file: File };
 
 const HEART_SUTRA_SECTIONS = HEART_SUTRA_DOCUMENT.sections;
 
@@ -73,53 +78,65 @@ const HEART_SUTRA_IMAGE_PALETTES = {
 const DOWNLOADS: Record<ChartId, DownloadOption[]> = {
   yihua: [
     {
-      href: assetPath("/charts/yihua-light-desktop.jpg"),
+      originalHref: assetPath("/charts/yihua-light-desktop.jpg"),
       filename: "一花五叶谱_浅色版_A4_300dpi.jpeg",
       label: "浅色 · 横幅",
+      theme: "light",
+      layout: "desktop",
     },
     {
-      href: assetPath("/charts/yihua-dark-desktop.jpg"),
+      originalHref: assetPath("/charts/yihua-dark-desktop.jpg"),
       filename: "一花五叶谱_深色版_A4_300dpi.jpeg",
       label: "深色 · 横幅",
+      theme: "dark",
+      layout: "desktop",
     },
     {
-      href: assetPath("/charts/yihua-light-mobile.jpg"),
+      originalHref: assetPath("/charts/yihua-light-mobile.jpg"),
       filename: "一花五叶谱_浅色版_手机完整长图_1440px.jpeg",
       label: "浅色 · 长卷",
+      theme: "light",
+      layout: "mobile",
     },
     {
-      href: assetPath("/charts/yihua-dark-mobile.jpg"),
+      originalHref: assetPath("/charts/yihua-dark-mobile.jpg"),
       filename: "一花五叶谱_深色版_手机完整长图_1440px.jpeg",
       label: "深色 · 长卷",
+      theme: "dark",
+      layout: "mobile",
     },
   ],
   yunmen: [
     {
-      href: assetPath("/charts/yunmen-light.jpg"),
+      originalHref: assetPath("/charts/yunmen-light.jpg"),
       filename: "云门宗与丹法南宗谱_浅色版_A4_300dpi.jpeg",
       label: "浅色",
+      theme: "light",
     },
     {
-      href: assetPath("/charts/yunmen-dark.jpg"),
+      originalHref: assetPath("/charts/yunmen-dark.jpg"),
       filename: "云门宗与丹法南宗谱_深色版_A4_300dpi.jpeg",
       label: "深色",
+      theme: "dark",
     },
   ],
   atiyoga: [
     {
-      href: assetPath("/charts/atiyoga-light.jpg"),
+      originalHref: assetPath("/charts/atiyoga-light.jpg"),
       filename: "阿的瑜伽传承系统表_其一_浅色版_A4_300dpi.jpeg",
       label: "浅色",
+      theme: "light",
     },
     {
-      href: assetPath("/charts/atiyoga-dark.jpg"),
+      originalHref: assetPath("/charts/atiyoga-dark.jpg"),
       filename: "阿的瑜伽传承系统表_其一_深色版_A4_300dpi.jpeg",
       label: "深色",
+      theme: "dark",
     },
   ],
   yixi: [
     {
-      href: assetPath("/charts/yixi-original.jpg"),
+      originalHref: assetPath("/charts/yixi-original.jpg"),
       filename: "一夕中道谱_原始参考.jpg",
       label: "原稿",
     },
@@ -276,24 +293,27 @@ export default function Home() {
   const [saveStatus, setSaveStatus] = useState<ActionStatus>("idle");
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
   const [canShareImageFiles, setCanShareImageFiles] = useState(false);
+  const [preparedChartShare, setPreparedChartShare] =
+    useState<PreparedChartShare | null>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const transitionSequence = useRef(0);
-  const shareFileRequests = useRef(new Map<string, Promise<File>>());
+  const preparedChartFiles = useRef(new Map<string, File>());
+  const chartFileRequests = useRef(new Map<string, Promise<File>>());
   const chartViewportRef = useRef<HTMLDivElement>(null);
   const chart = CHARTS.find((item) => item.id === chartId) ?? CHARTS[0];
   const downloadOptions = DOWNLOADS[chartId];
   const displayedLayout: YihuaResolvedLayout = layoutMode;
   const viewerReady = preferencesReady;
   const currentDownload =
-    chartId === "yihua"
-      ? downloadOptions.find((option) =>
-          option.href.includes(`yihua-${theme}-${displayedLayout}`),
-        ) ?? downloadOptions[0]
-      : chartId === "yixi"
-        ? downloadOptions[0]
-        : downloadOptions.find((option) =>
-            option.href.includes(`-${theme}.jpg`),
-          ) ?? downloadOptions[0];
+    downloadOptions.find(
+      (option) =>
+        (option.theme === undefined || option.theme === theme) &&
+        (option.layout === undefined || option.layout === displayedLayout),
+    ) ?? downloadOptions[0];
+  const currentChartShare =
+    preparedChartShare?.originalHref === currentDownload.originalHref
+      ? preparedChartShare
+      : null;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -362,6 +382,37 @@ export default function Home() {
     });
     return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    if (!canShareImageFiles || activeView !== "charts") return;
+
+    let cancelled = false;
+    const option = currentDownload;
+
+    void chartShareFile(option).then(
+      (file) => {
+        if (!cancelled) {
+          setPreparedChartShare({
+            originalHref: option.originalHref,
+            status: "ready",
+            file,
+          });
+        }
+      },
+      () => {
+        if (!cancelled) {
+          setPreparedChartShare({
+            originalHref: option.originalHref,
+            status: "error",
+          });
+        }
+      },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeView, canShareImageFiles, currentDownload]);
 
   useEffect(() => {
     if (!preferencesReady) return;
@@ -494,7 +545,7 @@ export default function Home() {
     void preloadChartPreview(targetPreview(selection)).catch(() => undefined);
   }
 
-  async function prepareView({
+  function prepareView({
     nextChart = chartId,
     nextTheme = theme,
     nextLayoutMode = layoutMode,
@@ -505,17 +556,6 @@ export default function Home() {
     nextLayoutMode?: YihuaLayoutMode;
     scrollToTop?: boolean;
   }) {
-    if (
-      activeView === "charts" &&
-      nextChart === chartId &&
-      nextTheme === theme &&
-      nextLayoutMode === layoutMode
-    ) {
-      transitionSequence.current += 1;
-      setPendingPreview(null);
-      return;
-    }
-
     const preview = targetPreview({
       nextChart,
       nextTheme,
@@ -524,14 +564,20 @@ export default function Home() {
     const sequence = ++transitionSequence.current;
     setPendingPreview(preview);
 
-    await preloadChartPreview(preview).catch(() => undefined);
-    if (sequence !== transitionSequence.current) return;
-
+    // Change the visible selection immediately. Waiting for image.decode()
+    // here made every tap depend on network speed, which was especially
+    // noticeable in iPad Safari.
     setChartId(nextChart);
     setActiveView("charts");
     setTheme(nextTheme);
     setLayoutMode(nextLayoutMode);
-    setPendingPreview(null);
+    void preloadChartPreview(preview)
+      .catch(() => undefined)
+      .then(() => {
+        if (sequence === transitionSequence.current) {
+          setPendingPreview(null);
+        }
+      });
 
     if (scrollToTop) {
       window.requestAnimationFrame(() => {
@@ -543,7 +589,7 @@ export default function Home() {
   function chooseChart(nextChart: ChartId) {
     setCopyStatus("idle");
     setSaveStatus("idle");
-    void prepareView({ nextChart, scrollToTop: true });
+    prepareView({ nextChart, scrollToTop: true });
   }
 
   function chooseHeartSutra() {
@@ -665,59 +711,106 @@ export default function Home() {
       setTheme(nextTheme);
       return;
     }
-    void prepareView({ nextTheme });
+    prepareView({ nextTheme });
   }
 
   function chartShareFile(option: DownloadOption) {
-    const cached = shareFileRequests.current.get(option.href);
-    if (cached) return cached;
+    const prepared = preparedChartFiles.current.get(option.originalHref);
+    if (prepared) return Promise.resolve(prepared);
 
-    const request = fetch(option.href)
+    const pending = chartFileRequests.current.get(option.originalHref);
+    if (pending) return pending;
+
+    const request = fetch(option.originalHref)
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`Unable to load ${option.href}`);
+          throw new Error(`Unable to load original ${option.originalHref}`);
         }
         return response.blob();
       })
-      .then(
-        (blob) =>
-          new File([blob], option.filename, {
-            type: blob.type || "image/jpeg",
-          }),
-      );
+      .then((blob) => {
+        const file = new File([blob], option.filename, {
+          type: blob.type || "image/jpeg",
+        });
+        preparedChartFiles.current.delete(option.originalHref);
+        preparedChartFiles.current.set(option.originalHref, file);
+        while (preparedChartFiles.current.size > 2) {
+          const oldest = preparedChartFiles.current.keys().next().value;
+          if (!oldest) break;
+          preparedChartFiles.current.delete(oldest);
+        }
+        return file;
+      });
 
-    shareFileRequests.current.set(option.href, request);
-    request.catch(() => shareFileRequests.current.delete(option.href));
+    chartFileRequests.current.set(option.originalHref, request);
+    request.then(
+      () => chartFileRequests.current.delete(option.originalHref),
+      () => chartFileRequests.current.delete(option.originalHref),
+    );
     return request;
   }
 
-  function warmChartShare(option: DownloadOption) {
-    if (!canShareImageFiles) return;
-    void chartShareFile(option).catch(() => undefined);
+  function retryChartSharePreparation() {
+    const option = currentDownload;
+    setPreparedChartShare({
+      originalHref: option.originalHref,
+      status: "loading",
+    });
+    void chartShareFile(option).then(
+      (file) =>
+        setPreparedChartShare({
+          originalHref: option.originalHref,
+          status: "ready",
+          file,
+        }),
+      () =>
+        setPreparedChartShare({
+          originalHref: option.originalHref,
+          status: "error",
+        }),
+    );
   }
 
-  async function shareOrDownloadChart(
-    event: React.MouseEvent<HTMLAnchorElement>,
-    option: DownloadOption,
-  ) {
-    if (!canShareImageFiles) return;
-    event.preventDefault();
+  function saveChartToPhotoLibrary() {
+    if (currentChartShare?.status !== "ready") {
+      retryChartSharePreparation();
+      return;
+    }
 
     try {
-      const file = await chartShareFile(option);
-      if (!navigator.canShare({ files: [file] })) {
-        triggerImageDownload(option.href, option.filename);
+      if (!navigator.canShare({ files: [currentChartShare.file] })) {
+        setSaveStatus("error");
         return;
       }
-      await navigator.share({
-        files: [file],
-        title: chart.title,
-      });
-    } catch (error) {
-      if (!isShareCancellation(error)) {
-        triggerImageDownload(option.href, option.filename);
-      }
+
+      setSaveStatus("saving");
+      // navigator.share() must be called synchronously inside this click.
+      // Awaiting the image fetch first causes iPad Safari to discard the
+      // transient user activation and ignore the save action.
+      void navigator
+        .share({
+          files: [currentChartShare.file],
+          title: chart.title,
+        })
+        .then(() => {
+          setSaveStatus("saved");
+          window.setTimeout(() => setSaveStatus("idle"), 1800);
+        })
+        .catch((error: unknown) => {
+          setSaveStatus(isShareCancellation(error) ? "idle" : "error");
+        });
+    } catch {
+      setSaveStatus("error");
     }
+  }
+
+  function chooseDownloadOption(option: DownloadOption) {
+    setCopyStatus("idle");
+    setSaveStatus("idle");
+    prepareView({
+      nextTheme: option.theme ?? theme,
+      nextLayoutMode: option.layout ?? layoutMode,
+    });
   }
 
   async function saveHeartSutraImage() {
@@ -1018,14 +1111,14 @@ export default function Home() {
                       className={[
                         layoutMode === value ? "is-active" : "",
                         pendingPreview ===
-                        targetPreview({ nextLayoutMode: value })
+                          targetPreview({ nextLayoutMode: value })
                           ? "is-loading"
                           : "",
                       ]
                         .filter(Boolean)
                         .join(" ")}
                       onClick={() =>
-                        void prepareView({ nextLayoutMode: value })
+                        prepareView({ nextLayoutMode: value })
                       }
                       onPointerEnter={() =>
                         warmView({ nextLayoutMode: value })
@@ -1063,34 +1156,52 @@ export default function Home() {
                         : ""
                     }`}
                   >
-                    <a
-                      className="action-button"
-                      href={currentDownload.href}
-                      download={currentDownload.filename}
-                      aria-label={
-                        canShareImageFiles
-                          ? `在手机上分享或保存当前显示的${chart.title}图片`
-                          : `下载当前显示的${chart.title}图片`
-                      }
-                      title={
-                        canShareImageFiles
-                          ? "打开系统菜单，可选择“存储到照片”"
-                          : `下载当前显示：${currentDownload.label}`
-                      }
-                      onPointerDown={() => warmChartShare(currentDownload)}
-                      onClick={(event) =>
-                        void shareOrDownloadChart(event, currentDownload)
-                      }
-                    >
-                      <DownloadIcon />
-                      <span>保存</span>
-                    </a>
+                    {canShareImageFiles ? (
+                      <button
+                        className={`action-button action-button--${saveStatus}`}
+                        type="button"
+                        disabled={
+                          currentChartShare?.status === "loading" ||
+                          (currentChartShare === null &&
+                            saveStatus !== "error")
+                        }
+                        onClick={saveChartToPhotoLibrary}
+                        aria-label={`将当前显示的${chart.title}图片保存到相册`}
+                        title="打开系统菜单后选择“存储图像”"
+                      >
+                        <DownloadIcon />
+                        <span>
+                          {currentChartShare?.status === "error"
+                            ? "重新准备"
+                            : currentChartShare?.status !== "ready"
+                              ? "准备中"
+                              : saveStatus === "saving"
+                                ? "打开中"
+                                : saveStatus === "saved"
+                                  ? "已完成"
+                                  : saveStatus === "error"
+                                    ? "保存失败"
+                                    : "存到相册"}
+                        </span>
+                      </button>
+                    ) : (
+                      <a
+                        className="action-button"
+                        href={currentDownload.originalHref}
+                        download={currentDownload.filename}
+                        aria-label={`下载当前显示的${chart.title}图片`}
+                        title={`下载当前显示：${currentDownload.label}`}
+                      >
+                        <DownloadIcon />
+                        <span>保存</span>
+                      </a>
+                    )}
 
                     {downloadOptions.length > 1 && (
                       <details className="download-control">
                         <summary
-                          aria-label={`选择${chart.title}下载版本`}
-                          title="选择其他版本"
+                          aria-label={`选择${chart.title}显示与下载版本`}
+                          title="切换显示与下载版本"
                         >
                           <span
                             className="download-menu-glyph"
@@ -1099,25 +1210,24 @@ export default function Home() {
                         </summary>
                         <div>
                           {downloadOptions.map((option) => (
-                            <a
-                              href={option.href}
-                              download={option.filename}
+                            <button
+                              type="button"
                               aria-current={
-                                option.href === currentDownload.href
+                                option.originalHref ===
+                                currentDownload.originalHref
                                   ? "true"
                                   : undefined
                               }
-                              onPointerDown={() => warmChartShare(option)}
                               onClick={(event) => {
                                 event.currentTarget
                                   .closest("details")
                                   ?.removeAttribute("open");
-                                void shareOrDownloadChart(event, option);
+                                chooseDownloadOption(option);
                               }}
-                              key={option.href}
+                              key={option.originalHref}
                             >
                               {option.label}
-                            </a>
+                            </button>
                           ))}
                         </div>
                       </details>
@@ -1277,11 +1387,17 @@ export default function Home() {
               : copyStatus === "error"
                 ? "浏览器未允许自动复制"
                 : saveStatus === "saving"
-                  ? "正在生成心经图片"
+                  ? activeView === "heart-sutra"
+                    ? "正在生成心经图片"
+                    : "正在打开系统图片保存菜单"
                   : saveStatus === "saved"
-                    ? "心经图片已保存"
+                    ? activeView === "heart-sutra"
+                      ? "心经图片已保存"
+                      : `${chart.title}图片保存操作已完成`
                     : saveStatus === "error"
-                      ? "心经图片保存失败"
+                      ? activeView === "heart-sutra"
+                        ? "心经图片保存失败"
+                        : `${chart.title}图片保存失败`
                       : ""}
         </p>
       </section>
