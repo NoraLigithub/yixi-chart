@@ -20,14 +20,14 @@ const steps = [
   {
     number: "02",
     title: "切换外观与版式",
-    copy: "「明 / 暗」改变底色；「横幅」横向看全貌，「长卷」顺着页面向下读。",
+    copy: "「明 / 暗」改变底色；横幅适合电脑、iPad，长卷适合手机。",
     shotClass: styles.shotAppearance,
     shotAlt: "界面上方的明暗与横幅长卷切换按钮",
   },
   {
     number: "03",
     title: "保存图片",
-    copy: "点「保存」即可。iPad 在系统菜单选择「存储图像」，电脑会直接下载。",
+    copy: "点「保存」即可。手机、iPad 在系统菜单选择「存储图像」，电脑会直接下载。",
     shotClass: styles.shotSave,
     shotAlt: "界面上方的保存按钮和版本选择箭头",
   },
@@ -65,7 +65,7 @@ export default function GuidePage() {
           <p className={styles.eyebrow}>30 秒上手</p>
           <h1>四步看懂，打开就会</h1>
           <p className={styles.lead}>
-            先选择想看的图谱或典籍，再按需要切换外观与版式；最后保存图片或复制文字。
+            首次加载速度较慢，请耐心等待。先选择想看的图谱或典籍，再按需要切换外观与版式；最后保存图片或复制文字。
           </p>
         </section>
 

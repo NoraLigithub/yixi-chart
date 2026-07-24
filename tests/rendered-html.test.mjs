@@ -210,8 +210,11 @@ test("server-renders the concise illustrated guide", async () => {
   assert.match(html, /四步看懂，打开就会/);
   assert.match(html, /选择内容/);
   assert.match(html, /切换外观与版式/);
+  assert.match(html, /首次加载速度较慢，请耐心等待/);
+  assert.match(html, /横幅适合电脑、iPad，长卷适合手机/);
   assert.match(html, /保存图片/);
-  assert.match(html, /iPad 在系统菜单选择「存储图像」/);
+  assert.match(html, /手机、iPad 在系统菜单选择「存储图像」/);
+  assert.match(html, /电脑会直接下载/);
   assert.match(html, /复制文字/);
   assert.match(html, /手机也一样/);
   assert.match(html, /interface-desktop\.jpg/);
