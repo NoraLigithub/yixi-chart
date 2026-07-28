@@ -3,6 +3,7 @@
 一夕网页源码，收录传承图谱与经典原文。
 
 - 在线访问：<https://noraligithub.github.io/yixi-chart/>
+- 中国大陆镜像：<https://yixi-d0gdvnzxyaabb78aa-1459218819.tcloudbaseapp.com/>
 - 30 秒使用说明：<https://noraligithub.github.io/yixi-chart/guide>
 - Node.js：`>=22.13.0`
 - 图谱规范数据：`content/charts/*.json`
@@ -51,3 +52,8 @@ npm run build:pages
 ```
 
 推送到 `main` 后，`.github/workflows/pages.yml` 会自动构建并发布。
+
+CloudBase 镜像使用空 `NEXT_PUBLIC_BASE_PATH` 构建，不能直接上传带
+`/yixi-chart` 子路径的 Pages 产物。环境 ID、上传命令、体验版限制和发布后
+验收见
+[《腾讯 CloudBase 国内镜像部署》](../../docs/腾讯CloudBase镜像部署.md)。
