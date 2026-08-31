@@ -110,7 +110,7 @@
   "layout": {
     "a4_orientation": "portrait",
     "background": "#FEFCF8",
-    "output": {"a4": "云门宗与丹法南宗谱_浅色版_A4_300dpi.jpeg"},
+    "output": {"a4": "云门宗与丹法南宗谱_浅色版_A4_600dpi.jpeg"},
     "node_hints": {
       "n1": {"row": 0, "side": "left"},
       "n2": {"row": 1, "side": "left"},

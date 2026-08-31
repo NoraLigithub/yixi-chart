@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "id": "dzogchen4",
+  "kind": "lineage_chart",
+  "title": "大圆满传承系统表（其四）",
+  "short_title": "大圆满其四",
+  "nodes": [
+    {
+      "id": "jigme_lingpa",
+      "name": {
+        "primary": "悲智光尊者",
+        "variants": []
+      },
+      "parents": [],
+      "tags": []
+    },
+    {
+      "id": "jigme_gyalwe_nyugu",
+      "name": {
+        "primary": "如来芽尊者",
+        "variants": []
+      },
+      "parents": [
+        {
+          "node_id": "jigme_lingpa",
+          "relation": "lineage",
+          "display_order": 1
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "patrul",
+      "name": {
+        "primary": "华智仁波切",
+        "variants": []
+      },
+      "parents": [
+        {
+          "node_id": "jigme_gyalwe_nyugu",
+          "relation": "lineage",
+          "display_order": 1
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "khyentse_wangpo",
+      "name": {
+        "primary": "蒋扬钦哲旺波仁波切",
+        "variants": []
+      },
+      "parents": [
+        {
+          "node_id": "jigme_gyalwe_nyugu",
+          "relation": "lineage",
+          "display_order": 2
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "mipham",
+      "name": {
+        "primary": "全知麦彭尊者",
+        "variants": []
+      },
+      "parents": [
+        {
+          "node_id": "patrul",
+          "relation": "lineage",
+          "display_order": 1
+        },
+        {
+          "node_id": "khyentse_wangpo",
+          "relation": "lineage",
+          "display_order": 1
+        }
+      ],
+      "tags": []
+    }
+  ],
+  "groups": [],
+  "annotations": [
+    {
+      "kind": "source",
+      "placement": "footer",
+      "text": "吾师一夕中道口述于一夕讲堂"
+    },
+    {
+      "kind": "record",
+      "placement": "footer",
+      "text": "一夕一心、一夕一念、一夕真意笔记  2026年8月17日"
+    },
+    {
+      "kind": "credit",
+      "placement": "footer",
+      "text": "一夕真妙制作图谱"
+    }
+  ],
+  "layout": {
+    "a4_orientation": "portrait",
+    "output": {"a4": "大圆满传承系统表_其四_浅色版_A4_600dpi.jpeg"},
+    "main_chain": ["jigme_lingpa", "jigme_gyalwe_nyugu"],
+    "node_hints": {
+      "jigme_lingpa": {"x": 1240, "y": 580},
+      "jigme_gyalwe_nyugu": {"x": 1240, "y": 1060},
+      "patrul": {"x": 640, "y": 1700},
+      "khyentse_wangpo": {"x": 1840, "y": 1700},
+      "mipham": {"x": 1240, "y": 2340}
+    }
+  }
+}

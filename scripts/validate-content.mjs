@@ -8,7 +8,7 @@ import {
 } from "../lib/chart-yaml.mjs";
 
 const WEB_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const CHART_IDS = ["yihua", "yunmen", "atiyoga", "yixi"];
+const CHART_IDS = ["yihua", "yunmen", "atiyoga", "yixi", "dzogchen4"];
 
 async function readJson(relativePath) {
   return JSON.parse(
@@ -161,6 +161,12 @@ assert.match(atiyogaYaml, /关系: "传承方向"/);
 const yixiYaml = charts.get("yixi").yaml;
 assert.match(yixiYaml, /名称: "一夕一心"/);
 assert.match(yixiYaml, /次序: 22/);
+
+const dzogchen4Yaml = charts.get("dzogchen4").yaml;
+assert.match(dzogchen4Yaml, /名称: "大圆满传承系统表（其四）"/);
+assert.match(dzogchen4Yaml, /名称: "全知麦彭尊者"/);
+assert.match(dzogchen4Yaml, /华智仁波切/);
+assert.match(dzogchen4Yaml, /蒋扬钦哲旺波仁波切/);
 
 const heartSutra = await readJson("content/texts/heart-sutra.json");
 assert.equal(heartSutra.schema_version, 1, "heart-sutra: schema_version");

@@ -1,6 +1,8 @@
 export const CHART_PREVIEWS = {
   "atiyoga-dark": "atiyoga-dark.preview-aca88a423d.jpg",
   "atiyoga-light": "atiyoga-light.preview-de58ed054c.jpg",
+  "dzogchen4-dark": "dzogchen4-dark.preview-3045f71503.jpg",
+  "dzogchen4-light": "dzogchen4-light.preview-31465e47d6.jpg",
   "yihua-dark-desktop": "yihua-dark-desktop.preview-60a8ef3f2a.jpg",
   "yihua-dark-mobile": "yihua-dark-mobile.preview-ddb13041fc.jpg",
   "yihua-light-desktop": "yihua-light-desktop.preview-f95ddbd645.jpg",

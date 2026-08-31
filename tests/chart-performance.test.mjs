@@ -5,6 +5,8 @@ import test from "node:test";
 const PREVIEWS = {
   "atiyoga-dark.jpg": "atiyoga-dark.preview-aca88a423d.jpg",
   "atiyoga-light.jpg": "atiyoga-light.preview-de58ed054c.jpg",
+  "dzogchen4-dark.jpg": "dzogchen4-dark.preview-3045f71503.jpg",
+  "dzogchen4-light.jpg": "dzogchen4-light.preview-31465e47d6.jpg",
   "yihua-dark-desktop.jpg": "yihua-dark-desktop.preview-60a8ef3f2a.jpg",
   "yihua-dark-mobile.jpg": "yihua-dark-mobile.preview-ddb13041fc.jpg",
   "yihua-light-desktop.jpg": "yihua-light-desktop.preview-f95ddbd645.jpg",

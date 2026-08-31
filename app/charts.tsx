@@ -7,13 +7,19 @@ import { CHART_PREVIEWS } from "./chart-assets";
 import {
   annotationTexts,
   ATIYOGA_DOCUMENT,
+  DZOGCHEN4_DOCUMENT,
   nodeDisplayName,
   YIHUA_DOCUMENT,
   YIXI_DOCUMENT,
   YUNMEN_DOCUMENT,
 } from "./content";
 
-export type ChartId = "yihua" | "yunmen" | "atiyoga" | "yixi";
+export type ChartId =
+  | "yihua"
+  | "yunmen"
+  | "atiyoga"
+  | "yixi"
+  | "dzogchen4";
 export type ChartTheme = "light" | "dark";
 export type YihuaLayoutMode = "desktop" | "mobile";
 export type YihuaResolvedLayout = YihuaLayoutMode;
@@ -40,6 +46,7 @@ export function getChartImageSource(
   }
   if (chartId === "yunmen") return imageSource(`yunmen-${theme}`);
   if (chartId === "atiyoga") return imageSource(`atiyoga-${theme}`);
+  if (chartId === "dzogchen4") return imageSource(`dzogchen4-${theme}`);
   return imageSource("yixi-original");
 }
 
@@ -499,6 +506,72 @@ export function AtiyogaChart({
       width={2480}
       height={3508}
       spots={ATI_SPOTS}
+      ready={ready}
+      className="facsimile-chart--portrait"
+    />
+  );
+}
+
+const DZOGCHEN4_LAYOUT_ORIGIN_Y = 580;
+const DZOGCHEN4_VERTICAL_SHIFT = 80;
+const DZOGCHEN4_VERTICAL_SCALE = 1.08;
+const DZOGCHEN4_NODES = DZOGCHEN4_DOCUMENT.nodes.map((node) => {
+  const hint = DZOGCHEN4_DOCUMENT.layout.node_hints?.[node.id];
+  const originalY = hint?.y ?? 0;
+  return {
+    text: nodeDisplayName(node),
+    x: hint?.x ?? 0,
+    y:
+      DZOGCHEN4_LAYOUT_ORIGIN_Y +
+      (originalY - DZOGCHEN4_LAYOUT_ORIGIN_Y) *
+        DZOGCHEN4_VERTICAL_SCALE +
+      DZOGCHEN4_VERTICAL_SHIFT,
+  };
+});
+const DZOGCHEN4_FOOTER = DZOGCHEN4_DOCUMENT.annotations.flatMap(
+  (annotation) =>
+    annotation.placement === "footer"
+      ? annotation.text
+          .split("  ")
+          .map((line) => line.trim())
+          .filter(Boolean)
+      : [],
+);
+const DZOGCHEN4_SPOTS: TextSpot[] = [
+  {
+    text: DZOGCHEN4_DOCUMENT.title,
+    x: 1240,
+    y: 190,
+    size: 112,
+    width: 1800,
+  },
+  ...DZOGCHEN4_NODES.map((node) => ({ ...node, size: 84, width: 980 })),
+  ...DZOGCHEN4_FOOTER.map((text, index) => ({
+    text,
+    x: 2330,
+    y: 2948 + index * 60,
+    size: 48,
+    width: 1500,
+    align: "right" as const,
+  })),
+];
+
+export const DZOGCHEN4_COPY_TEXT = chartToHumanYaml(DZOGCHEN4_DOCUMENT);
+
+export function Dzogchen4Chart({
+  theme,
+  ready,
+}: {
+  theme: ChartTheme;
+  ready?: boolean;
+}) {
+  return (
+    <FacsimileChart
+      image={getChartImageSource("dzogchen4", theme, "desktop")}
+      alt={`${DZOGCHEN4_DOCUMENT.title}${theme === "dark" ? "深色" : "浅色"}版`}
+      width={2480}
+      height={3508}
+      spots={DZOGCHEN4_SPOTS}
       ready={ready}
       className="facsimile-chart--portrait"
     />

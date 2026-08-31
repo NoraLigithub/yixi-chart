@@ -43,11 +43,12 @@ test("server-renders the static chart viewer", async () => {
   assert.match(html, /一花五叶谱/);
   assert.match(html, /云门与丹法/);
   assert.match(html, /阿的瑜伽/);
+  assert.match(html, /大圆满其四/);
   assert.match(html, /id="library-tab-yixi"[^>]*>一夕<\/button>/);
   assert.doesNotMatch(html, /id="library-tab-yixi"[^>]*>一夕中道<\/button>/);
   assert.match(html, /典藏分类/);
   assert.match(html, /选择图谱/);
-  assert.match(html, /4 种/);
+  assert.match(html, /5 种/);
   assert.match(html, /1 部/);
   assert.doesNotMatch(html, /浏览内容/);
   assert.doesNotMatch(html, /选择内容/);
@@ -79,6 +80,8 @@ test("server-renders the static chart viewer", async () => {
   const downloadFiles = [
     "atiyoga-dark.jpg",
     "atiyoga-light.jpg",
+    "dzogchen4-dark.jpg",
+    "dzogchen4-light.jpg",
     "yihua-dark-desktop.jpg",
     "yihua-dark-mobile.jpg",
     "yihua-light-desktop.jpg",

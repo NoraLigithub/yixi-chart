@@ -123,7 +123,7 @@
   ],
   "layout": {
     "a4_orientation": "portrait",
-    "output": {"a4": "阿的瑜伽传承系统表_其一_浅色版_A4_300dpi.jpeg"},
+    "output": {"a4": "阿的瑜伽传承系统表_其一_浅色版_A4_600dpi.jpeg"},
     "main_chain": ["garab_dorje", "manjushrimitra", "shri_singha"],
     "node_hints": {
       "garab_dorje": {"x": 1240, "y": 430},

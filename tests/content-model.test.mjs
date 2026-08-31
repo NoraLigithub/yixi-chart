@@ -51,3 +51,14 @@ test("human YAML exposes lineage order without internal layout metadata", async 
   );
   assert.doesNotMatch(output, /display_order|node_id|layout|x:/);
 });
+
+test("human YAML preserves the two-parent Dzogchen convergence", async () => {
+  const document = await chart("dzogchen4");
+  const human = chartToHumanObject(document);
+  const mipham = human.人物.find((person) => person.名称 === "全知麦彭尊者");
+
+  assert.deepEqual(mipham.上承, [
+    { 人物: "华智仁波切", 关系: "传承" },
+    { 人物: "蒋扬钦哲旺波仁波切", 关系: "传承" },
+  ]);
+});

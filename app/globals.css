@@ -556,7 +556,8 @@ button:disabled {
 }
 
 .chart-frame--yunmen,
-.chart-frame--atiyoga {
+.chart-frame--atiyoga,
+.chart-frame--dzogchen4 {
   max-width: 1040px;
 }
 

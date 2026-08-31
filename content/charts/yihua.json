@@ -301,7 +301,7 @@
   "layout": {
     "a4_orientation": "landscape",
     "background": "#FFFFFF",
-    "output": {"a4": "一花五叶谱_浅色版_A4_300dpi.jpeg"},
+    "output": {"a4": "一花五叶谱_浅色版_A4_600dpi.jpeg"},
     "node_hints": {
       "n1": {"align_x_with": "n11"},
       "n4": {"align_x_with": "n11"},

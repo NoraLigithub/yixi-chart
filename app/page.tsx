@@ -8,6 +8,8 @@ import {
   AtiyogaChart,
   type ChartId,
   type ChartTheme,
+  DZOGCHEN4_COPY_TEXT,
+  Dzogchen4Chart,
   getChartImageSource,
   type YihuaLayoutMode,
   type YihuaResolvedLayout,
@@ -82,14 +84,14 @@ const DOWNLOADS: Record<ChartId, DownloadOption[]> = {
   yihua: [
     {
       originalHref: assetPath("/charts/yihua-light-desktop.jpg"),
-      filename: "一花五叶谱_浅色版_A4_300dpi.jpeg",
+      filename: "一花五叶谱_浅色版_A4_600dpi.jpeg",
       label: "浅色 · 横幅",
       theme: "light",
       layout: "desktop",
     },
     {
       originalHref: assetPath("/charts/yihua-dark-desktop.jpg"),
-      filename: "一花五叶谱_深色版_A4_300dpi.jpeg",
+      filename: "一花五叶谱_深色版_A4_600dpi.jpeg",
       label: "深色 · 横幅",
       theme: "dark",
       layout: "desktop",
@@ -112,13 +114,13 @@ const DOWNLOADS: Record<ChartId, DownloadOption[]> = {
   yunmen: [
     {
       originalHref: assetPath("/charts/yunmen-light.jpg"),
-      filename: "云门宗与丹法南宗谱_浅色版_A4_300dpi.jpeg",
+      filename: "云门宗与丹法南宗谱_浅色版_A4_600dpi.jpeg",
       label: "浅色",
       theme: "light",
     },
     {
       originalHref: assetPath("/charts/yunmen-dark.jpg"),
-      filename: "云门宗与丹法南宗谱_深色版_A4_300dpi.jpeg",
+      filename: "云门宗与丹法南宗谱_深色版_A4_600dpi.jpeg",
       label: "深色",
       theme: "dark",
     },
@@ -126,13 +128,27 @@ const DOWNLOADS: Record<ChartId, DownloadOption[]> = {
   atiyoga: [
     {
       originalHref: assetPath("/charts/atiyoga-light.jpg"),
-      filename: "阿的瑜伽传承系统表_其一_浅色版_A4_300dpi.jpeg",
+      filename: "阿的瑜伽传承系统表_其一_浅色版_A4_600dpi.jpeg",
       label: "浅色",
       theme: "light",
     },
     {
       originalHref: assetPath("/charts/atiyoga-dark.jpg"),
-      filename: "阿的瑜伽传承系统表_其一_深色版_A4_300dpi.jpeg",
+      filename: "阿的瑜伽传承系统表_其一_深色版_A4_600dpi.jpeg",
+      label: "深色",
+      theme: "dark",
+    },
+  ],
+  dzogchen4: [
+    {
+      originalHref: assetPath("/charts/dzogchen4-light.jpg"),
+      filename: "大圆满传承系统表_其四_浅色版_A4_600dpi.jpeg",
+      label: "浅色",
+      theme: "light",
+    },
+    {
+      originalHref: assetPath("/charts/dzogchen4-dark.jpg"),
+      filename: "大圆满传承系统表_其四_深色版_A4_600dpi.jpeg",
       label: "深色",
       theme: "dark",
     },
@@ -151,6 +167,7 @@ const CHART_COPY_TEXT: Record<ChartId, string> = {
   yunmen: YUNMEN_COPY_TEXT,
   atiyoga: ATI_COPY_TEXT,
   yixi: YIXI_COPY_TEXT,
+  dzogchen4: DZOGCHEN4_COPY_TEXT,
 };
 
 const CHARTS: Chart[] = CHART_DOCUMENTS.map((document) => ({
@@ -281,6 +298,9 @@ function ChartContent({
   if (chartId === "yunmen") return <YunmenChart theme={theme} ready={ready} />;
   if (chartId === "atiyoga") {
     return <AtiyogaChart theme={theme} ready={ready} />;
+  }
+  if (chartId === "dzogchen4") {
+    return <Dzogchen4Chart theme={theme} ready={ready} />;
   }
   if (chartId === "yixi") return <YixiChart ready={ready} />;
   return <YihuaChart theme={theme} layout={layout} ready={ready} />;

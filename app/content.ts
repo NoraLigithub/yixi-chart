@@ -1,4 +1,5 @@
 import atiyogaData from "../content/charts/atiyoga.json";
+import dzogchen4Data from "../content/charts/dzogchen4.json";
 import yihuaData from "../content/charts/yihua.json";
 import yixiData from "../content/charts/yixi.json";
 import yunmenData from "../content/charts/yunmen.json";
@@ -40,7 +41,7 @@ export type ChartAnnotation = {
 
 export type ChartDocument = {
   schema_version: 1;
-  id: "yihua" | "yunmen" | "atiyoga" | "yixi";
+  id: "yihua" | "yunmen" | "atiyoga" | "yixi" | "dzogchen4";
   kind: "lineage_chart";
   title: string;
   short_title: string;
@@ -95,12 +96,14 @@ export const YIHUA_DOCUMENT = yihuaData as unknown as ChartDocument;
 export const YUNMEN_DOCUMENT = yunmenData as unknown as ChartDocument;
 export const ATIYOGA_DOCUMENT = atiyogaData as unknown as ChartDocument;
 export const YIXI_DOCUMENT = yixiData as unknown as ChartDocument;
+export const DZOGCHEN4_DOCUMENT = dzogchen4Data as unknown as ChartDocument;
 
 export const CHART_DOCUMENTS = [
   YIHUA_DOCUMENT,
   YUNMEN_DOCUMENT,
   ATIYOGA_DOCUMENT,
   YIXI_DOCUMENT,
+  DZOGCHEN4_DOCUMENT,
 ] as const;
 
 export const HEART_SUTRA_DOCUMENT =
