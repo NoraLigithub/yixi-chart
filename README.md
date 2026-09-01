@@ -7,14 +7,16 @@
 - 30 秒使用说明：<https://noraligithub.github.io/yixi-chart/guide>
 - Node.js：`>=22.13.0`
 - 图谱规范数据：`content/charts/*.json`
-- 《心经》规范文本：`content/texts/heart-sutra.json`
+- 典籍规范文本：`content/texts/*.json`
 
 图谱图片生成器、网页可选文字层和“复制图谱数据”共用同一批 JSON。
 复制按钮将内部模型即时转换为面向人阅读的中文 YAML，不暴露节点 ID、
-布局坐标等程序字段。《心经》只作为独立结构化文本使用，不生成 YAML。
+布局坐标等程序字段。典籍只作为独立结构化文本使用，不生成 YAML。
 
 网页收录一花五叶、云门与丹法、阿的瑜伽、一夕和大圆满其四五种图谱；除
 一夕原稿外，各图均提供浅色、深色版本。
+典籍收录《般若波罗蜜多心经》与《普贤菩萨十大愿王》，均可切换浅色、
+深色外观，复制全文或生成图片。
 
 ## 本地运行
 
@@ -33,7 +35,7 @@ npm run validate:content
 npm test
 ```
 
-`validate:content` 检查规范数据、上承关系、心经结构和公开 YAML；
+`validate:content` 检查规范数据、上承关系、典籍结构和公开 YAML；
 `npm test` 包含生产构建、图像指纹、YAML、渲染和资源测试，但不包含
 lint，也不覆盖 GitHub Pages 子路径构建。内容、关系或图谱图片变化时，
 还必须重新生成所有受影响的版本并直接检查最终 JPEG；自动测试和哈希

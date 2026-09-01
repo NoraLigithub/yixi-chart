@@ -49,7 +49,7 @@ test("server-renders the static chart viewer", async () => {
   assert.match(html, /典藏分类/);
   assert.match(html, /选择图谱/);
   assert.match(html, /5 种/);
-  assert.match(html, /1 部/);
+  assert.match(html, /2 部/);
   assert.doesNotMatch(html, /浏览内容/);
   assert.doesNotMatch(html, /选择内容/);
   assert.match(html, /role="tab"/);
@@ -90,19 +90,27 @@ test("server-renders the static chart viewer", async () => {
     "yunmen-dark.jpg",
     "yunmen-light.jpg",
   ];
-  const [pageSource, heartSutra, yixiDocument] = await Promise.all([
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(
-      new URL("../content/texts/heart-sutra.json", import.meta.url),
-      "utf8",
-    ).then(JSON.parse),
-    readFile(
-      new URL("../content/charts/yixi.json", import.meta.url),
-      "utf8",
-    ).then(JSON.parse),
-  ]);
+  const [pageSource, heartSutra, samantabhadraTenVows, yixiDocument] =
+    await Promise.all([
+      readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+      readFile(
+        new URL("../content/texts/heart-sutra.json", import.meta.url),
+        "utf8",
+      ).then(JSON.parse),
+      readFile(
+        new URL(
+          "../content/texts/samantabhadra-ten-vows.json",
+          import.meta.url,
+        ),
+        "utf8",
+      ).then(JSON.parse),
+      readFile(
+        new URL("../content/charts/yixi.json", import.meta.url),
+        "utf8",
+      ).then(JSON.parse),
+    ]);
 
-  assert.ok(pageSource.includes('type LibraryView = "charts" | "heart-sutra"'));
+  assert.ok(pageSource.includes('type LibraryView = "charts" | "scriptures"'));
   assert.equal(yixiDocument.short_title, "一夕");
   assert.notEqual(yixiDocument.short_title, "一夕中道");
   assert.ok(pageSource.includes('className="sr-only"'));
@@ -119,20 +127,41 @@ test("server-renders the static chart viewer", async () => {
       section.text.includes("揭谛　揭谛　波罗揭谛"),
     ),
   );
-  assert.ok(pageSource.includes("HEART_SUTRA_DOCUMENT.title"));
+  assert.equal(samantabhadraTenVows.title, "普贤菩萨十大愿王");
+  assert.equal(samantabhadraTenVows.short_title, "十大愿王");
+  assert.equal(
+    samantabhadraTenVows.attribution,
+    "《大方广佛华严经·普贤行愿品》节录 · 唐般若译",
+  );
+  assert.deepEqual(
+    samantabhadraTenVows.sections.slice(1).map((section) => section.text),
+    [
+      "一者、礼敬诸佛。",
+      "二者、称赞如来。",
+      "三者、广修供养。",
+      "四者、忏悔业障。",
+      "五者、随喜功德。",
+      "六者、请转法轮。",
+      "七者、请佛住世。",
+      "八者、常随佛学。",
+      "九者、恒顺众生。",
+      "十者、普皆回向。",
+    ],
+  );
+  assert.ok(pageSource.includes("SCRIPTURE_DOCUMENTS.map"));
   assert.ok(
     pageSource.includes(
-      "aria-label={`复制${HEART_SUTRA_DOCUMENT.title}全文`}",
+      "aria-label={`复制${scripture.title}全文`}",
     ),
   );
   assert.ok(
     pageSource.includes(
-      "`将${HEART_SUTRA_DOCUMENT.title}图片存到相册`",
+      "`将${scripture.title}图片存到相册`",
     ),
   );
   assert.ok(!pageSource.includes("保存为图片"));
   assert.ok(pageSource.includes('theme === "dark" ? "深色版" : "浅色版"'));
-  assert.ok(pageSource.includes("HEART_SUTRA_IMAGE_PALETTES[theme]"));
+  assert.ok(pageSource.includes("SCRIPTURE_IMAGE_PALETTES[theme]"));
   assert.ok(pageSource.includes("navigator.maxTouchPoints < 1"));
   assert.ok(pageSource.includes("/Android|iPhone|iPad|iPod|Mobile/i"));
   assert.ok(pageSource.includes('navigator.platform === "MacIntel"'));
@@ -194,16 +223,16 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(!pageSource.includes("全屏查看"));
   assert.ok(!pageSource.includes('className="document-title"'));
 
-  const heartSutraCopyControl =
-    "aria-label={`复制${HEART_SUTRA_DOCUMENT.title}全文`}";
-  const heartSutraActions = pageSource.slice(
-    pageSource.indexOf(heartSutraCopyControl) - 1800,
-    pageSource.indexOf(heartSutraCopyControl) + 300,
+  const scriptureCopyControl =
+    "aria-label={`复制${scripture.title}全文`}";
+  const scriptureActions = pageSource.slice(
+    pageSource.indexOf(scriptureCopyControl) - 1800,
+    pageSource.indexOf(scriptureCopyControl) + 300,
   );
   assert.ok(
-    heartSutraActions.indexOf("saveHeartSutraImage") <
-      heartSutraActions.indexOf(heartSutraCopyControl),
-    "Heart Sutra actions put image saving before copy",
+    scriptureActions.indexOf("saveScriptureImage") <
+      scriptureActions.indexOf(scriptureCopyControl),
+    "Scripture actions put image saving before copy",
   );
 
   await Promise.all(

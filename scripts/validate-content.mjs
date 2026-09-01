@@ -9,6 +9,7 @@ import {
 
 const WEB_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const CHART_IDS = ["yihua", "yunmen", "atiyoga", "yixi", "dzogchen4"];
+const SCRIPTURE_FILES = ["heart-sutra.json", "samantabhadra-ten-vows.json"];
 
 async function readJson(relativePath) {
   return JSON.parse(
@@ -168,24 +169,37 @@ assert.match(dzogchen4Yaml, /名称: "全知麦彭尊者"/);
 assert.match(dzogchen4Yaml, /华智仁波切/);
 assert.match(dzogchen4Yaml, /蒋扬钦哲旺波仁波切/);
 
-const heartSutra = await readJson("content/texts/heart-sutra.json");
-assert.equal(heartSutra.schema_version, 1, "heart-sutra: schema_version");
-assert.equal(heartSutra.kind, "scripture", "heart-sutra: kind");
-assert.equal(typeof heartSutra.title, "string", "heart-sutra: title");
-assert.equal(typeof heartSutra.attribution, "string", "heart-sutra: attribution");
-assert.ok(heartSutra.sections.length > 0, "heart-sutra: sections");
-assert.equal(
-  heartSutra.sections.length,
-  new Set(heartSutra.sections.map((section) => section.id)).size,
-  "heart-sutra: duplicate section id",
-);
-for (const section of heartSutra.sections) {
-  assert.ok(
-    ["prose", "lead", "mantra"].includes(section.kind),
-    `heart-sutra: section kind ${section.kind}`,
+const scriptures = [];
+for (const filename of SCRIPTURE_FILES) {
+  const scripture = await readJson(`content/texts/${filename}`);
+  const label = scripture.id || filename;
+  assert.equal(scripture.schema_version, 1, `${label}: schema_version`);
+  assert.equal(scripture.kind, "scripture", `${label}: kind`);
+  assert.equal(typeof scripture.title, "string", `${label}: title`);
+  assert.equal(typeof scripture.short_title, "string", `${label}: short_title`);
+  assert.equal(typeof scripture.seal_label, "string", `${label}: seal_label`);
+  assert.equal(typeof scripture.attribution, "string", `${label}: attribution`);
+  assert.equal(typeof scripture.translator?.name, "string", `${label}: translator`);
+  assert.ok(scripture.sections.length > 0, `${label}: sections`);
+  assert.equal(
+    scripture.sections.length,
+    new Set(scripture.sections.map((section) => section.id)).size,
+    `${label}: duplicate section id`,
   );
-  assert.ok(section.text.length > 0, `heart-sutra: empty section ${section.id}`);
+  for (const section of scripture.sections) {
+    assert.ok(
+      ["prose", "lead", "mantra"].includes(section.kind),
+      `${label}: section kind ${section.kind}`,
+    );
+    assert.ok(section.text.length > 0, `${label}: empty section ${section.id}`);
+  }
+  scriptures.push(scripture);
 }
+assert.equal(
+  scriptures.length,
+  new Set(scriptures.map((scripture) => scripture.id)).size,
+  "scriptures: duplicate document id",
+);
 
 const [chartSource, pageSource] = await Promise.all([
   readFile(resolve(WEB_ROOT, "app/charts.tsx"), "utf8"),
@@ -194,14 +208,16 @@ const [chartSource, pageSource] = await Promise.all([
 for (const text of ["六祖", "嘉饶多杰", "云门文偃禅师", "一夕一心"]) {
   assert.ok(!chartSource.includes(text), `charts.tsx duplicates content: ${text}`);
 }
-for (const text of [
-  heartSutra.title,
-  heartSutra.attribution,
-  heartSutra.sections[0].text,
-]) {
-  assert.ok(!pageSource.includes(text), `page.tsx duplicates scripture: ${text}`);
+for (const scripture of scriptures) {
+  for (const text of [
+    scripture.title,
+    scripture.attribution,
+    scripture.sections[0].text,
+  ]) {
+    assert.ok(!pageSource.includes(text), `page.tsx duplicates scripture: ${text}`);
+  }
 }
 
 console.log(
-  `content validation passed: ${CHART_IDS.length} charts, ${heartSutra.sections.length} scripture sections`,
+  `content validation passed: ${CHART_IDS.length} charts, ${scriptures.length} scriptures`,
 );

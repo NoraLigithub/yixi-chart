@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "samantabhadra-ten-vows",
+  "kind": "scripture",
+  "title": "普贤菩萨十大愿王",
+  "short_title": "十大愿王",
+  "seal_label": "愿王",
+  "attribution": "《大方广佛华严经·普贤行愿品》节录 · 唐般若译",
+  "translator": {
+    "dynasty": "唐",
+    "name": "般若"
+  },
+  "sections": [
+    {
+      "id": "introduction",
+      "kind": "lead",
+      "text": "善男子！若欲成就此功德门者，应修十种广大行愿。何等为十？"
+    },
+    {
+      "id": "vow-01",
+      "kind": "prose",
+      "text": "一者、礼敬诸佛。"
+    },
+    {
+      "id": "vow-02",
+      "kind": "prose",
+      "text": "二者、称赞如来。"
+    },
+    {
+      "id": "vow-03",
+      "kind": "prose",
+      "text": "三者、广修供养。"
+    },
+    {
+      "id": "vow-04",
+      "kind": "prose",
+      "text": "四者、忏悔业障。"
+    },
+    {
+      "id": "vow-05",
+      "kind": "prose",
+      "text": "五者、随喜功德。"
+    },
+    {
+      "id": "vow-06",
+      "kind": "prose",
+      "text": "六者、请转法轮。"
+    },
+    {
+      "id": "vow-07",
+      "kind": "prose",
+      "text": "七者、请佛住世。"
+    },
+    {
+      "id": "vow-08",
+      "kind": "prose",
+      "text": "八者、常随佛学。"
+    },
+    {
+      "id": "vow-09",
+      "kind": "prose",
+      "text": "九者、恒顺众生。"
+    },
+    {
+      "id": "vow-10",
+      "kind": "prose",
+      "text": "十者、普皆回向。"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { assetPath } from "./asset-path";
-import { CHART_DOCUMENTS, HEART_SUTRA_DOCUMENT } from "./content";
+import { CHART_DOCUMENTS, SCRIPTURE_DOCUMENTS } from "./content";
 import {
   ATI_COPY_TEXT,
   AtiyogaChart,
@@ -37,7 +37,7 @@ type DownloadOption = {
   layout?: YihuaResolvedLayout;
 };
 
-type LibraryView = "charts" | "heart-sutra";
+type LibraryView = "charts" | "scriptures";
 type ActionStatus = "idle" | "copied" | "saving" | "saved" | "error";
 type PreparedChartShare =
   | { originalHref: string; status: "loading" | "error" }
@@ -46,16 +46,9 @@ type PreparedChartShare =
 // The legacy key may contain a viewport-derived value. This key records only
 // an explicit layout choice made through the controls.
 const LAYOUT_PREFERENCE_KEY = "yixi-chart-layout-choice";
-const HEART_SUTRA_SECTIONS = HEART_SUTRA_DOCUMENT.sections;
+const DEFAULT_SCRIPTURE_ID = SCRIPTURE_DOCUMENTS[0].id;
 
-const HEART_SUTRA_COPY_TEXT = [
-  HEART_SUTRA_DOCUMENT.title,
-  HEART_SUTRA_DOCUMENT.attribution,
-  "",
-  ...HEART_SUTRA_SECTIONS.map((section) => section.text),
-].join("\n\n");
-
-const HEART_SUTRA_IMAGE_PALETTES = {
+const SCRIPTURE_IMAGE_PALETTES = {
   light: {
     canvas: "#eee7d8",
     gradientInner: "rgba(255, 253, 245, 0.8)",
@@ -79,6 +72,15 @@ const HEART_SUTRA_IMAGE_PALETTES = {
     body: "#e4d9c8",
   },
 } as const satisfies Record<ChartTheme, Record<string, string>>;
+
+function scriptureCopyText(scripture: (typeof SCRIPTURE_DOCUMENTS)[number]) {
+  return [
+    scripture.title,
+    scripture.attribution,
+    "",
+    ...scripture.sections.map((section) => section.text),
+  ].join("\n\n");
+}
 
 const DOWNLOADS: Record<ChartId, DownloadOption[]> = {
   yihua: [
@@ -199,6 +201,13 @@ function isChartId(value: string | null): value is ChartId {
   return CHARTS.some((chart) => chart.id === value);
 }
 
+function isScriptureId(value: string | null): value is string {
+  return (
+    value !== null &&
+    SCRIPTURE_DOCUMENTS.some((scripture) => scripture.id === value)
+  );
+}
+
 function isTheme(value: string | null): value is ChartTheme {
   return value === "light" || value === "dark";
 }
@@ -309,6 +318,7 @@ function ChartContent({
 export default function Home() {
   const [activeView, setActiveView] = useState<LibraryView>("charts");
   const [chartId, setChartId] = useState<ChartId>("yihua");
+  const [scriptureId, setScriptureId] = useState(DEFAULT_SCRIPTURE_ID);
   const [theme, setTheme] = useState<ChartTheme>("light");
   const [layoutMode, setLayoutMode] = useState<YihuaLayoutMode>("desktop");
   const [preferencesReady, setPreferencesReady] = useState(false);
@@ -324,6 +334,10 @@ export default function Home() {
   const chartFileRequests = useRef(new Map<string, Promise<File>>());
   const chartViewportRef = useRef<HTMLDivElement>(null);
   const chart = CHARTS.find((item) => item.id === chartId) ?? CHARTS[0];
+  const scripture =
+    SCRIPTURE_DOCUMENTS.find((item) => item.id === scriptureId) ??
+    SCRIPTURE_DOCUMENTS[0];
+  const scriptureCopy = scriptureCopyText(scripture);
   const downloadOptions = DOWNLOADS[chartId];
   const displayedLayout: YihuaResolvedLayout = layoutMode;
   const viewerReady = preferencesReady;
@@ -344,6 +358,7 @@ export default function Home() {
     const themeFromUrl = params.get("theme");
     const layoutFromUrl = params.get("layout");
     const viewFromUrl = params.get("view");
+    const scriptureFromUrl = params.get("scripture");
     const storedTheme = window.localStorage.getItem("yixi-chart-theme");
     const storedLayout = window.localStorage.getItem(LAYOUT_PREFERENCE_KEY);
     const systemTheme: ChartTheme = window.matchMedia("(prefers-color-scheme: dark)")
@@ -360,7 +375,12 @@ export default function Home() {
             ? storedLayout
             : "desktop",
       );
-      if (viewFromUrl === "heart-sutra") setActiveView("heart-sutra");
+      if (viewFromUrl === "heart-sutra" || viewFromUrl === "scriptures") {
+        setActiveView("scriptures");
+        if (isScriptureId(scriptureFromUrl)) {
+          setScriptureId(scriptureFromUrl);
+        }
+      }
       setTheme(
         isTheme(themeFromUrl)
           ? themeFromUrl
@@ -440,21 +460,23 @@ export default function Home() {
     url.searchParams.set("chart", chartId);
     url.searchParams.set("theme", theme);
     url.searchParams.set("layout", layoutMode);
-    if (activeView === "heart-sutra") {
-      url.searchParams.set("view", "heart-sutra");
+    if (activeView === "scriptures") {
+      url.searchParams.set("view", "scriptures");
+      url.searchParams.set("scripture", scripture.id);
     } else {
       url.searchParams.delete("view");
+      url.searchParams.delete("scripture");
     }
     window.history.replaceState(null, "", url);
-  }, [activeView, chartId, layoutMode, preferencesReady, theme]);
+  }, [activeView, chartId, layoutMode, preferencesReady, scripture.id, theme]);
 
   useEffect(() => {
     const activeTab =
-      activeView === "heart-sutra"
-        ? document.getElementById("library-tab-heart-sutra")
+      activeView === "scriptures"
+        ? document.getElementById(`library-tab-${scripture.id}`)
         : document.getElementById(`library-tab-${chartId}`);
     activeTab?.scrollIntoView({ block: "nearest", inline: "center" });
-  }, [activeView, chartId]);
+  }, [activeView, chartId, scripture.id]);
 
   useEffect(() => {
     if (
@@ -610,12 +632,13 @@ export default function Home() {
     prepareView({ nextChart, scrollToTop: true });
   }
 
-  function chooseHeartSutra() {
+  function chooseScripture(nextScriptureId = scripture.id) {
     transitionSequence.current += 1;
     setPendingPreview(null);
     setCopyStatus("idle");
     setSaveStatus("idle");
-    setActiveView("heart-sutra");
+    setScriptureId(nextScriptureId);
+    setActiveView("scriptures");
     window.requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: "auto" });
     });
@@ -634,13 +657,20 @@ export default function Home() {
   function handleTabKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
-    if (activeView !== "charts") return;
-    const tabIds = CHARTS.map((item) => item.id);
-    const index = tabIds.indexOf(chartId);
+    const tabIds =
+      activeView === "charts"
+        ? CHARTS.map((item) => item.id)
+        : SCRIPTURE_DOCUMENTS.map((item) => item.id);
+    const activeId = activeView === "charts" ? chartId : scripture.id;
+    const index = tabIds.indexOf(activeId);
     const offset = event.key === "ArrowRight" ? 1 : -1;
     const nextIndex = (index + offset + tabIds.length) % tabIds.length;
     const nextId = tabIds[nextIndex];
-    chooseChart(nextId);
+    if (activeView === "charts") {
+      chooseChart(nextId as ChartId);
+    } else {
+      chooseScripture(nextId);
+    }
     window.requestAnimationFrame(() => {
       document.getElementById(`library-tab-${nextId}`)?.focus();
     });
@@ -650,11 +680,11 @@ export default function Home() {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
     const nextView: LibraryView =
-      activeView === "charts" ? "heart-sutra" : "charts";
+      activeView === "charts" ? "scriptures" : "charts";
     if (nextView === "charts") {
       chooseCharts();
     } else {
-      chooseHeartSutra();
+      chooseScripture();
     }
     window.requestAnimationFrame(() => {
       document.getElementById(`collection-mode-${nextView}`)?.focus();
@@ -720,12 +750,12 @@ export default function Home() {
 
   function copyAllText() {
     void writeClipboard(
-      activeView === "heart-sutra" ? HEART_SUTRA_COPY_TEXT : chart.copyText,
+      activeView === "scriptures" ? scriptureCopy : chart.copyText,
     );
   }
 
   function chooseTheme(nextTheme: ChartTheme) {
-    if (activeView === "heart-sutra") {
+    if (activeView === "scriptures") {
       setTheme(nextTheme);
       return;
     }
@@ -839,12 +869,12 @@ export default function Home() {
     });
   }
 
-  async function saveHeartSutraImage() {
+  async function saveScriptureImage() {
     setSaveStatus("saving");
 
     try {
       await document.fonts?.ready;
-      const palette = HEART_SUTRA_IMAGE_PALETTES[theme];
+      const palette = SCRIPTURE_IMAGE_PALETTES[theme];
       const canvas = document.createElement("canvas");
       const width = 1600;
       const height = 2260;
@@ -881,12 +911,12 @@ export default function Home() {
       context.textAlign = "center";
       context.font =
         '500 74px "Songti SC", "STSong", "Noto Serif CJK SC", serif';
-      context.fillText(HEART_SUTRA_DOCUMENT.title, width / 2, 226);
+      context.fillText(scripture.title, width / 2, 226);
 
       context.fillStyle = palette.subtitle;
       context.font =
         '32px "Kaiti SC", "STKaiti", "Songti SC", serif';
-      context.fillText(HEART_SUTRA_DOCUMENT.attribution, width / 2, 304);
+      context.fillText(scripture.attribution, width / 2, 304);
 
       context.beginPath();
       context.moveTo(width / 2 - 90, 352);
@@ -903,7 +933,7 @@ export default function Home() {
       context.font =
         '40px "Songti SC", "STSong", "Noto Serif CJK SC", serif';
 
-      for (const section of HEART_SUTRA_SECTIONS) {
+      for (const section of scripture.sections) {
         let line = "";
         for (const character of section.text) {
           const candidate = line + character;
@@ -929,7 +959,7 @@ export default function Home() {
           "image/png",
         );
       });
-      const filename = `${HEART_SUTRA_DOCUMENT.title}_${HEART_SUTRA_DOCUMENT.translator.name}译_${
+      const filename = `${scripture.title}_${scripture.translator.name}译_${
         theme === "dark" ? "深色版" : "浅色版"
       }.png`;
 
@@ -939,7 +969,7 @@ export default function Home() {
           try {
             await navigator.share({
               files: [file],
-              title: HEART_SUTRA_DOCUMENT.title,
+              title: scripture.title,
             });
             setSaveStatus("saved");
             window.setTimeout(() => setSaveStatus("idle"), 1800);
@@ -964,8 +994,8 @@ export default function Home() {
   }
 
   const activeTabId =
-    activeView === "heart-sutra"
-      ? "library-tab-heart-sutra"
+    activeView === "scriptures"
+      ? `library-tab-${scripture.id}`
       : `library-tab-${chartId}`;
 
   return (
@@ -994,15 +1024,15 @@ export default function Home() {
             <small>{`${CHARTS.length} 种`}</small>
           </button>
           <button
-            id="collection-mode-heart-sutra"
-            className={activeView === "heart-sutra" ? "is-active" : ""}
+            id="collection-mode-scriptures"
+            className={activeView === "scriptures" ? "is-active" : ""}
             type="button"
-            aria-pressed={activeView === "heart-sutra"}
-            onClick={chooseHeartSutra}
+            aria-pressed={activeView === "scriptures"}
+            onClick={() => chooseScripture()}
             onKeyDown={handleModeKeyDown}
           >
             <span>典籍</span>
-            <small>1 部</small>
+            <small>{`${SCRIPTURE_DOCUMENTS.length} 部`}</small>
           </button>
         </nav>
 
@@ -1085,18 +1115,26 @@ export default function Home() {
               );
             })
           ) : (
-            <button
-              id="library-tab-heart-sutra"
-              className="is-active"
-              type="button"
-              role="tab"
-              aria-selected="true"
-              aria-controls="active-library-panel"
-              tabIndex={0}
-              onClick={chooseHeartSutra}
-            >
-              {HEART_SUTRA_DOCUMENT.title}
-            </button>
+            SCRIPTURE_DOCUMENTS.map((item) => {
+              const isActive = scripture.id === item.id;
+
+              return (
+                <button
+                  id={`library-tab-${item.id}`}
+                  className={isActive ? "is-active" : ""}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls="active-library-panel"
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => chooseScripture(item.id)}
+                  onKeyDown={handleTabKeyDown}
+                  key={item.id}
+                >
+                  {item.short_title}
+                </button>
+              );
+            })
           )}
         </nav>
       </header>
@@ -1118,7 +1156,7 @@ export default function Home() {
           <h1 id="active-document-title" className="sr-only">
             {activeView === "charts"
               ? chart.title
-              : HEART_SUTRA_DOCUMENT.title}
+              : scripture.title}
           </h1>
 
           <div className="document-tools">
@@ -1279,13 +1317,13 @@ export default function Home() {
                   <button
                     className={`action-button action-button--${saveStatus}`}
                     type="button"
-                    onClick={() => void saveHeartSutraImage()}
+                    onClick={() => void saveScriptureImage()}
                     disabled={saveStatus === "saving"}
-                    aria-label={`将${HEART_SUTRA_DOCUMENT.title}图片存到相册`}
+                    aria-label={`将${scripture.title}图片存到相册`}
                     title={
                       canShareImageFiles
                         ? "打开系统菜单，可选择“存储到照片”"
-                        : `下载${HEART_SUTRA_DOCUMENT.title}图片`
+                        : `下载${scripture.title}图片`
                     }
                   >
                     <DownloadIcon />
@@ -1303,7 +1341,7 @@ export default function Home() {
                     className={`action-button action-button--${copyStatus}`}
                     type="button"
                     onClick={copyAllText}
-                    aria-label={`复制${HEART_SUTRA_DOCUMENT.title}全文`}
+                    aria-label={`复制${scripture.title}全文`}
                   >
                     <CopyIcon />
                     <span>
@@ -1363,20 +1401,20 @@ export default function Home() {
             {chart.note && <p className="chart-caption">{chart.note}</p>}
           </div>
         ) : (
-          <div className="sutra-surface" key="heart-sutra">
+          <div className="sutra-surface" key={scripture.id}>
             <article
               className="sutra-leaf"
-              aria-label={`${HEART_SUTRA_DOCUMENT.title}全文`}
+              aria-label={`${scripture.title}全文`}
             >
               <header className="sutra-heading">
-                <h2>{HEART_SUTRA_DOCUMENT.title}</h2>
-                <p>{HEART_SUTRA_DOCUMENT.attribution}</p>
+                <h2>{scripture.title}</h2>
+                <p>{scripture.attribution}</p>
               </header>
               <div className="sutra-rule" aria-hidden="true">
                 <span />
               </div>
               <div className="sutra-text">
-                {HEART_SUTRA_SECTIONS.map((section) => (
+                {scripture.sections.map((section) => (
                   <p
                     className={[
                       section.kind === "lead" ? "is-lead" : "",
@@ -1391,7 +1429,7 @@ export default function Home() {
                 ))}
               </div>
               <footer className="sutra-end" aria-hidden="true">
-                <span>心经</span>
+                <span>{scripture.seal_label}</span>
               </footer>
             </article>
           </div>
@@ -1401,22 +1439,22 @@ export default function Home() {
           {pendingPreview
             ? "正在准备图谱"
             : copyStatus === "copied"
-              ? activeView === "heart-sutra"
-                ? "心经全文已复制"
+              ? activeView === "scriptures"
+                ? `${scripture.short_title}全文已复制`
                 : `${chart.title}完整内容已复制`
               : copyStatus === "error"
                 ? "浏览器未允许自动复制"
                 : saveStatus === "saving"
-                  ? activeView === "heart-sutra"
-                    ? "正在生成心经图片"
+                  ? activeView === "scriptures"
+                    ? `正在生成${scripture.short_title}图片`
                     : "正在打开系统图片保存菜单"
                   : saveStatus === "saved"
-                    ? activeView === "heart-sutra"
-                      ? "心经图片已保存"
+                    ? activeView === "scriptures"
+                      ? `${scripture.short_title}图片已保存`
                       : `${chart.title}图片保存操作已完成`
                     : saveStatus === "error"
-                      ? activeView === "heart-sutra"
-                        ? "心经图片保存失败"
+                      ? activeView === "scriptures"
+                        ? `${scripture.short_title}图片保存失败`
                         : `${chart.title}图片保存失败`
                       : ""}
         </p>

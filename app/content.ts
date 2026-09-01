@@ -4,6 +4,7 @@ import yihuaData from "../content/charts/yihua.json";
 import yixiData from "../content/charts/yixi.json";
 import yunmenData from "../content/charts/yunmen.json";
 import heartSutraData from "../content/texts/heart-sutra.json";
+import samantabhadraTenVowsData from "../content/texts/samantabhadra-ten-vows.json";
 
 export type NameVariant = {
   value: string;
@@ -80,6 +81,8 @@ export type ScriptureDocument = {
   id: string;
   kind: "scripture";
   title: string;
+  short_title: string;
+  seal_label: string;
   attribution: string;
   translator: {
     dynasty: string;
@@ -108,6 +111,13 @@ export const CHART_DOCUMENTS = [
 
 export const HEART_SUTRA_DOCUMENT =
   heartSutraData as unknown as ScriptureDocument;
+export const SAMANTABHADRA_TEN_VOWS_DOCUMENT =
+  samantabhadraTenVowsData as unknown as ScriptureDocument;
+
+export const SCRIPTURE_DOCUMENTS = [
+  HEART_SUTRA_DOCUMENT,
+  SAMANTABHADRA_TEN_VOWS_DOCUMENT,
+] as const;
 
 const NAME_WRAPPERS: Record<NameVariant["wrapper"], [string, string]> = {
   parentheses: ["（", "）"],

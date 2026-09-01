@@ -3,7 +3,8 @@
 这里保存图谱与典籍的唯一规范内容：
 
 - `charts/*.json`：传承图谱；
-- `texts/*.json`：经典正文。
+- `texts/*.json`：经典正文；`short_title` 用于典籍页签，`seal_label`
+  用于正文页尾印记。
 
 图谱统一使用 `nodes[].parents[]` 表达关系，不保存独立 `edges`：
 
@@ -19,7 +20,7 @@
 
 网页中的“复制图谱数据”由 `lib/chart-yaml.mjs` 把规范 JSON 转换为中文
 YAML。该 YAML 面向人阅读，会隐藏 ID、坐标和内部顺序字段，不是第二份
-数据源。《心经》不生成 YAML。
+数据源。典籍不生成 YAML。
 
 修改内容后至少运行：
 
