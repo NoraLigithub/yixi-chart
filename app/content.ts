@@ -1,5 +1,9 @@
 import atiyogaData from "../content/charts/atiyoga.json";
 import dzogchen4Data from "../content/charts/dzogchen4.json";
+import dzogchen3Data from "../content/charts/dzogchen3.json";
+import huayanData from "../content/charts/huayan.json";
+import huayan5Data from "../content/charts/huayan5.json";
+import tiantaiData from "../content/charts/tiantai.json";
 import yihuaData from "../content/charts/yihua.json";
 import yixiData from "../content/charts/yixi.json";
 import yunmenData from "../content/charts/yunmen.json";
@@ -42,7 +46,7 @@ export type ChartAnnotation = {
 
 export type ChartDocument = {
   schema_version: 1;
-  id: "yihua" | "yunmen" | "atiyoga" | "yixi" | "dzogchen4";
+  id: "yihua" | "yunmen" | "atiyoga" | "yixi" | "dzogchen4" | "tiantai" | "dzogchen3" | "huayan" | "huayan5";
   kind: "lineage_chart";
   title: string;
   short_title: string;
@@ -100,6 +104,10 @@ export const YUNMEN_DOCUMENT = yunmenData as unknown as ChartDocument;
 export const ATIYOGA_DOCUMENT = atiyogaData as unknown as ChartDocument;
 export const YIXI_DOCUMENT = yixiData as unknown as ChartDocument;
 export const DZOGCHEN4_DOCUMENT = dzogchen4Data as unknown as ChartDocument;
+export const TIANTAI_DOCUMENT = tiantaiData as unknown as ChartDocument;
+export const DZOGCHEN3_DOCUMENT = dzogchen3Data as unknown as ChartDocument;
+export const HUAYAN_DOCUMENT = huayanData as unknown as ChartDocument;
+export const HUAYAN5_DOCUMENT = huayan5Data as unknown as ChartDocument;
 
 export const CHART_DOCUMENTS = [
   YIHUA_DOCUMENT,
@@ -107,6 +115,10 @@ export const CHART_DOCUMENTS = [
   ATIYOGA_DOCUMENT,
   YIXI_DOCUMENT,
   DZOGCHEN4_DOCUMENT,
+  TIANTAI_DOCUMENT,
+  DZOGCHEN3_DOCUMENT,
+  HUAYAN_DOCUMENT,
+  HUAYAN5_DOCUMENT,
 ] as const;
 
 export const HEART_SUTRA_DOCUMENT =

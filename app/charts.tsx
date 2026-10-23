@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element -- explicit preload/decode and fallback control */
-
 import type { CSSProperties } from "react";
 import { chartToHumanYaml } from "../lib/chart-yaml.mjs";
 import { assetPath, previewPath } from "./asset-path";
@@ -8,7 +6,11 @@ import {
   annotationTexts,
   ATIYOGA_DOCUMENT,
   DZOGCHEN4_DOCUMENT,
+  DZOGCHEN3_DOCUMENT,
+  HUAYAN_DOCUMENT,
+  HUAYAN5_DOCUMENT,
   nodeDisplayName,
+  TIANTAI_DOCUMENT,
   YIHUA_DOCUMENT,
   YIXI_DOCUMENT,
   YUNMEN_DOCUMENT,
@@ -19,7 +21,11 @@ export type ChartId =
   | "yunmen"
   | "atiyoga"
   | "yixi"
-  | "dzogchen4";
+  | "dzogchen4"
+  | "tiantai"
+  | "dzogchen3"
+  | "huayan"
+  | "huayan5";
 export type ChartTheme = "light" | "dark";
 export type YihuaLayoutMode = "desktop" | "mobile";
 export type YihuaResolvedLayout = YihuaLayoutMode;
@@ -47,7 +53,11 @@ export function getChartImageSource(
   if (chartId === "yunmen") return imageSource(`yunmen-${theme}`);
   if (chartId === "atiyoga") return imageSource(`atiyoga-${theme}`);
   if (chartId === "dzogchen4") return imageSource(`dzogchen4-${theme}`);
-  return imageSource("yixi-original");
+  if (chartId === "tiantai") return imageSource(`tiantai-${theme}`);
+  if (chartId === "dzogchen3") return imageSource(`dzogchen3-${theme}`);
+  if (chartId === "huayan") return imageSource(`huayan-${theme}`);
+  if (chartId === "huayan5") return imageSource(`huayan5-${theme}`);
+  return imageSource(`yixi-${theme}`);
 }
 
 type TextSpot = {
@@ -67,6 +77,7 @@ type FacsimileChartProps = {
   height: number;
   spots: TextSpot[];
   className?: string;
+  desktopHighResolution?: boolean;
   ready?: boolean;
 };
 
@@ -81,6 +92,7 @@ function FacsimileChart({
   height,
   spots,
   className = "",
+  desktopHighResolution = false,
   ready = true,
 }: FacsimileChartProps) {
   return (
@@ -90,9 +102,17 @@ function FacsimileChart({
       data-facsimile-html="true"
       data-image-ready={ready}
     >
-      {/* The lightweight preview keeps navigation fast. Approved originals
-          remain available through the download controls. */}
-      {ready && (
+      {/* Always server-render the mobile-safe preview so the chart remains
+          visible when hydration, storage, or client JavaScript is blocked.
+          Fine-pointer desktop displays may select the approved original on
+          high-density screens; touch devices stay on the decode-safe preview. */}
+      <picture>
+        {desktopHighResolution && (
+          <source
+            media="(min-width: 821px) and (hover: hover) and (pointer: fine)"
+            srcSet={`${image.preview} 1x, ${image.original} 2x`}
+          />
+        )}
         <img
           src={image.preview}
           alt=""
@@ -103,10 +123,17 @@ function FacsimileChart({
           onError={(event) => {
             if (event.currentTarget.dataset.fallbackApplied) return;
             event.currentTarget.dataset.fallbackApplied = "true";
-            event.currentTarget.src = image.original;
+            const imageElement = event.currentTarget;
+            const failedOriginal = imageElement.currentSrc.endsWith(
+              image.original,
+            );
+            imageElement.parentElement
+              ?.querySelectorAll("source")
+              .forEach((source) => source.remove());
+            imageElement.src = failedOriginal ? image.preview : image.original;
           }}
         />
-      )}
+      </picture>
       <div className="facsimile-copy-layer" role="group" aria-label={alt}>
         {spots.map((spot, index) => {
           const style = {
@@ -394,6 +421,7 @@ export function YihuaChart({
       width={isMobile ? 1440 : 3508}
       height={isMobile ? 5680 : 2480}
       spots={isMobile ? YIHUA_MOBILE_SPOTS : YIHUA_DESKTOP_SPOTS}
+      desktopHighResolution={!isMobile}
       ready={ready}
       className={
         isMobile
@@ -578,6 +606,172 @@ export function Dzogchen4Chart({
   );
 }
 
+const TIANTAI_NODES = TIANTAI_DOCUMENT.nodes.map((node) => {
+  const hint = TIANTAI_DOCUMENT.layout.node_hints?.[node.id];
+  return {
+    text: nodeDisplayName(node),
+    x: hint?.x ?? 0,
+    y: hint?.y ?? 0,
+  };
+});
+const TIANTAI_GENERATIONS = [
+  ...new Map(
+    TIANTAI_DOCUMENT.nodes.map((node) => [
+      node.generation,
+      {
+        generation: node.generation,
+        y: TIANTAI_DOCUMENT.layout.node_hints?.[node.id]?.y ?? 0,
+      },
+    ]),
+  ).values(),
+].sort((left, right) => (left.generation ?? 0) - (right.generation ?? 0));
+const TIANTAI_FOOTER = TIANTAI_DOCUMENT.annotations.flatMap((annotation) =>
+  annotation.placement === "footer"
+    ? annotation.text
+        .split("  ")
+        .map((line) => line.trim())
+        .filter(Boolean)
+    : [],
+);
+const TIANTAI_SPOTS: TextSpot[] = [
+  {
+    text: TIANTAI_DOCUMENT.title,
+    x: 1100,
+    y: 145,
+    size: 96,
+    width: 1800,
+  },
+  ...TIANTAI_GENERATIONS.map(({ generation, y }) => ({
+    text: `第${chineseOrder(generation ?? 0)}代`,
+    x: 2110,
+    y,
+    size: 42,
+    width: 360,
+    align: "right" as const,
+  })),
+  ...TIANTAI_NODES.map((node) => ({ ...node, size: 72, width: 540 })),
+  ...TIANTAI_FOOTER.map((text, index) => ({
+    text,
+    x: 2352,
+    y: 3182 + index * 62,
+    size: 52,
+    width: 1500,
+    align: "right" as const,
+  })),
+];
+
+export const TIANTAI_COPY_TEXT = chartToHumanYaml(TIANTAI_DOCUMENT);
+
+export function TiantaiChart({
+  theme,
+  ready,
+}: {
+  theme: ChartTheme;
+  ready?: boolean;
+}) {
+  return (
+    <FacsimileChart
+      image={getChartImageSource("tiantai", theme, "desktop")}
+      alt={`${TIANTAI_DOCUMENT.title}${theme === "dark" ? "深色" : "浅色"}版`}
+      width={2480}
+      height={3508}
+      spots={TIANTAI_SPOTS}
+      ready={ready}
+      className="facsimile-chart--portrait"
+    />
+  );
+}
+
+function portraitFooter(document: typeof HUAYAN_DOCUMENT, startY: number): TextSpot[] {
+  const lines = document.annotations.flatMap((annotation) =>
+    annotation.placement === "footer"
+      ? annotation.text.split("  ").map((line) => line.trim()).filter(Boolean)
+      : [],
+  );
+  return lines.map((text, index) => ({
+    text,
+    x: 2352,
+    y: startY + index * 62,
+    size: 52,
+    width: 1500,
+    align: "right" as const,
+  }));
+}
+
+function portraitNodes(document: typeof HUAYAN_DOCUMENT, size: number): TextSpot[] {
+  return document.nodes.map((node) => ({
+    text: [
+      nodeDisplayName(node),
+      ...document.annotations
+        .filter((annotation) => annotation.node_id === node.id && annotation.kind === "editorial")
+        .map((annotation) => annotation.text),
+    ].join(""),
+    x: document.layout.node_hints?.[node.id]?.x ?? 0,
+    y: document.layout.node_hints?.[node.id]?.y ?? 0,
+    size,
+    width: node.id === "zongmi" ? 1240 : 800,
+  }));
+}
+
+const DZOGCHEN3_SPOTS: TextSpot[] = [
+  { text: DZOGCHEN3_DOCUMENT.title, x: 1240, y: 190, size: 112, width: 1800 },
+  ...portraitNodes(DZOGCHEN3_DOCUMENT, 84),
+  ...portraitFooter(DZOGCHEN3_DOCUMENT, 2948),
+];
+const HUAYAN_SPOTS: TextSpot[] = [
+  { text: HUAYAN_DOCUMENT.title, x: 1240, y: 145, size: 96, width: 1800 },
+  ...portraitNodes(HUAYAN_DOCUMENT, 72),
+  ...portraitFooter(HUAYAN_DOCUMENT, 3182),
+];
+const HUAYAN5_SPOTS: TextSpot[] = [
+  { text: HUAYAN5_DOCUMENT.title, x: 1240, y: 145, size: 96, width: 1800 },
+  ...portraitNodes(HUAYAN5_DOCUMENT, 72),
+  ...portraitFooter(HUAYAN5_DOCUMENT, 3182),
+];
+
+export const DZOGCHEN3_COPY_TEXT = chartToHumanYaml(DZOGCHEN3_DOCUMENT);
+export const HUAYAN_COPY_TEXT = chartToHumanYaml(HUAYAN_DOCUMENT);
+export const HUAYAN5_COPY_TEXT = chartToHumanYaml(HUAYAN5_DOCUMENT);
+
+function NewPortraitChart({
+  chartId,
+  theme,
+  ready,
+}: {
+  chartId: "dzogchen3" | "huayan" | "huayan5";
+  theme: ChartTheme;
+  ready?: boolean;
+}) {
+  const { title, spots } = {
+    dzogchen3: { title: DZOGCHEN3_DOCUMENT.title, spots: DZOGCHEN3_SPOTS },
+    huayan: { title: HUAYAN_DOCUMENT.title, spots: HUAYAN_SPOTS },
+    huayan5: { title: HUAYAN5_DOCUMENT.title, spots: HUAYAN5_SPOTS },
+  }[chartId];
+  return (
+    <FacsimileChart
+      image={getChartImageSource(chartId, theme, "desktop")}
+      alt={`${title}${theme === "dark" ? "深色" : "浅色"}版`}
+      width={2480}
+      height={3508}
+      spots={spots}
+      ready={ready}
+      className="facsimile-chart--portrait"
+    />
+  );
+}
+
+export function Dzogchen3Chart(props: { theme: ChartTheme; ready?: boolean }) {
+  return <NewPortraitChart chartId="dzogchen3" {...props} />;
+}
+
+export function HuayanChart(props: { theme: ChartTheme; ready?: boolean }) {
+  return <NewPortraitChart chartId="huayan" {...props} />;
+}
+
+export function Huayan5Chart(props: { theme: ChartTheme; ready?: boolean }) {
+  return <NewPortraitChart chartId="huayan5" {...props} />;
+}
+
 type YixiDisciple = {
   order: number;
   name?: string;
@@ -622,44 +816,73 @@ function chineseOrder(value: number) {
   if (value < 10) return digits[value];
   if (value === 10) return "十";
   if (value < 20) return `十${digits[value - 10]}`;
+  const tens = Math.floor(value / 10);
   const ones = value % 10;
-  return `二十${ones ? digits[ones] : ""}`;
+  return `${digits[tens]}十${ones ? digits[ones] : ""}`;
 }
 
 const YIXI_SPOTS: TextSpot[] = [
-  { text: nodeDisplayName(YIXI_ROOT), x: 1512, y: 185, size: 58, width: 150, vertical: true },
+  { text: YIXI_DOCUMENT.title, x: 1754, y: 120, size: 87, width: 420 },
+  { text: nodeDisplayName(YIXI_ROOT), x: 1754, y: 321, size: 54, width: 120, vertical: true },
   ...YIXI_DIRECT.map((disciple) => ({
-    text: `第${chineseOrder(disciple.order)}弟子${disciple.name ?? ""}`,
+    text: `第${chineseOrder(disciple.order)}弟子`,
     x: disciple.x,
-    y: 790,
-    size: 40,
-    width: 110,
+    y: 780,
+    size: 31,
+    width: 72,
+    vertical: true,
+  })),
+  ...YIXI_DIRECT.filter((disciple) => disciple.name).map((disciple) => ({
+    text: disciple.name ?? "",
+    x: disciple.x,
+    y: 1100,
+    size: 39,
+    width: 80,
     vertical: true,
   })),
   ...YIXI_DIRECT.filter((disciple) => disciple.children).flatMap((disciple) => {
     const children = disciple.children ?? [];
-    const spacing = 150;
-    return children.map((child, index) => ({
-      text: `第${chineseOrder(child.order)}弟子${child.name}`,
-      x: disciple.x + (index - (children.length - 1) / 2) * spacing,
-      y: 1580,
-      size: 38,
-      width: 110,
-      vertical: true,
-    }));
+    const spacing = children.length === 2 ? 176 : 116;
+    return children.flatMap((child, index) => {
+      const x = disciple.x + (index - (children.length - 1) / 2) * spacing;
+      return [
+        {
+          text: `第${chineseOrder(child.order)}弟子`,
+          x,
+          y: 1600,
+          size: 31,
+          width: 72,
+          vertical: true,
+        },
+        {
+          text: child.name,
+          x,
+          y: 1940,
+          size: 39,
+          width: 80,
+          vertical: true,
+        },
+      ];
+    });
   }),
-  { text: YIXI_RECORD, x: 210, y: 1680, size: 40, width: 100, vertical: true },
+  { text: YIXI_RECORD, x: 3270, y: 2330, size: 28, width: 260 },
 ];
 
 export const YIXI_COPY_TEXT = chartToHumanYaml(YIXI_DOCUMENT);
 
-export function YixiChart({ ready }: { ready?: boolean }) {
+export function YixiChart({
+  theme,
+  ready,
+}: {
+  theme: ChartTheme;
+  ready?: boolean;
+}) {
   return (
     <FacsimileChart
-      image={getChartImageSource("yixi", "light", "desktop")}
-      alt={`${YIXI_DOCUMENT.title}原稿`}
-      width={3084}
-      height={1967}
+      image={getChartImageSource("yixi", theme, "desktop")}
+      alt={`${YIXI_DOCUMENT.title}${theme === "dark" ? "深色" : "浅色"}版`}
+      width={3508}
+      height={2480}
       spots={YIXI_SPOTS}
       ready={ready}
       className="facsimile-chart--landscape facsimile-chart--yixi"

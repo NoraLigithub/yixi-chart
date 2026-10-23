@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "id": "dzogchen3",
+  "kind": "lineage_chart",
+  "title": "大圆满传承系统表（其三）",
+  "short_title": "大圆满其三",
+  "nodes": [
+    {
+      "id": "kumaradza",
+      "name": {
+        "primary": "革玛燃匝尊者",
+        "variants": []
+      },
+      "parents": [],
+      "tags": []
+    },
+    {
+      "id": "longchenpa",
+      "name": {
+        "primary": "龙钦巴尊者",
+        "variants": []
+      },
+      "parents": [
+        {
+          "node_id": "kumaradza",
+          "relation": "lineage",
+          "display_order": 1
+        }
+      ],
+      "tags": []
+    },
+    {
+      "id": "rangjung_dorje",
+      "name": {
+        "primary": "让迥多杰尊者",
+        "variants": []
+      },
+      "parents": [
+        {
+          "node_id": "kumaradza",
+          "relation": "lineage",
+          "display_order": 2
+        }
+      ],
+      "tags": []
+    }
+  ],
+  "groups": [],
+  "annotations": [
+    {
+      "kind": "source",
+      "placement": "footer",
+      "text": "吾师一夕中道口述于一夕讲堂"
+    },
+    {
+      "kind": "record",
+      "placement": "footer",
+      "text": "一夕一心、一夕一念、一夕真意笔记  2026年9月14日"
+    },
+    {
+      "kind": "credit",
+      "placement": "footer",
+      "text": "一夕真妙制作图谱"
+    }
+  ],
+  "layout": {
+    "a4_orientation": "portrait",
+    "output": {"a4": "大圆满传承系统表_其三_浅色版_A4_600dpi.jpeg"},
+    "main_chain": ["kumaradza"],
+    "node_hints": {
+      "kumaradza": {"x": 1240, "y": 1280},
+      "longchenpa": {"x": 640, "y": 1860},
+      "rangjung_dorje": {"x": 1840, "y": 1860}
+    }
+  }
+}

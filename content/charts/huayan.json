@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "id": "huayan",
+  "kind": "lineage_chart",
+  "title": "华严宗传承系统表",
+  "short_title": "华严宗",
+  "nodes": [
+    {
+      "id": "yuexia",
+      "name": {"primary": "月霞大师", "variants": []},
+      "parents": [],
+      "tags": []
+    },
+    {
+      "id": "cizhou",
+      "name": {"primary": "慈舟大师", "variants": []},
+      "parents": [
+        {"node_id": "yuexia", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    },
+    {
+      "id": "mengcan",
+      "name": {"primary": "梦参大师", "variants": []},
+      "parents": [
+        {"node_id": "cizhou", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    }
+  ],
+  "groups": [],
+  "annotations": [
+    {
+      "kind": "source",
+      "placement": "footer",
+      "text": "吾师一夕中道口述于一夕讲堂"
+    },
+    {
+      "kind": "record",
+      "placement": "footer",
+      "text": "一夕一心、一夕一念、一夕真意笔记  2026年10月12日"
+    },
+    {
+      "kind": "credit",
+      "placement": "footer",
+      "text": "一夕真妙制作图谱"
+    }
+  ],
+  "layout": {
+    "a4_orientation": "portrait",
+    "output": {
+      "a4": "华严宗传承系统表_浅色版_A4_600dpi.jpeg",
+      "a4_dark": "华严宗传承系统表_深色版_A4_600dpi.jpeg",
+      "mobile": "华严宗传承系统表_浅色版_手机预览_1860px.jpeg",
+      "mobile_dark": "华严宗传承系统表_深色版_手机预览_1860px.jpeg"
+    },
+    "main_chain": ["yuexia", "cizhou", "mengcan"],
+    "node_hints": {
+      "yuexia": {"x": 1240, "y": 860},
+      "cizhou": {"x": 1240, "y": 1400},
+      "mengcan": {"x": 1240, "y": 1940}
+    }
+  }
+}

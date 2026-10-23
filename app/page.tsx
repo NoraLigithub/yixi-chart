@@ -10,7 +10,15 @@ import {
   type ChartTheme,
   DZOGCHEN4_COPY_TEXT,
   Dzogchen4Chart,
+  DZOGCHEN3_COPY_TEXT,
+  Dzogchen3Chart,
+  HUAYAN_COPY_TEXT,
+  HUAYAN5_COPY_TEXT,
+  HuayanChart,
+  Huayan5Chart,
   getChartImageSource,
+  TIANTAI_COPY_TEXT,
+  TiantaiChart,
   type YihuaLayoutMode,
   type YihuaResolvedLayout,
   YIHUA_COPY_TEXT,
@@ -155,11 +163,74 @@ const DOWNLOADS: Record<ChartId, DownloadOption[]> = {
       theme: "dark",
     },
   ],
+  tiantai: [
+    {
+      originalHref: assetPath("/charts/tiantai-light.jpg"),
+      filename: "天台宗传承谱_浅色版_A4_600dpi.jpeg",
+      label: "浅色",
+      theme: "light",
+    },
+    {
+      originalHref: assetPath("/charts/tiantai-dark.jpg"),
+      filename: "天台宗传承谱_深色版_A4_600dpi.jpeg",
+      label: "深色",
+      theme: "dark",
+    },
+  ],
+  dzogchen3: [
+    {
+      originalHref: assetPath("/charts/dzogchen3-light.jpg"),
+      filename: "大圆满传承系统表_其三_浅色版_A4_600dpi.jpeg",
+      label: "浅色",
+      theme: "light",
+    },
+    {
+      originalHref: assetPath("/charts/dzogchen3-dark.jpg"),
+      filename: "大圆满传承系统表_其三_深色版_A4_600dpi.jpeg",
+      label: "深色",
+      theme: "dark",
+    },
+  ],
+  huayan: [
+    {
+      originalHref: assetPath("/charts/huayan-light.jpg"),
+      filename: "华严宗传承系统表_浅色版_A4_600dpi.jpeg",
+      label: "浅色",
+      theme: "light",
+    },
+    {
+      originalHref: assetPath("/charts/huayan-dark.jpg"),
+      filename: "华严宗传承系统表_深色版_A4_600dpi.jpeg",
+      label: "深色",
+      theme: "dark",
+    },
+  ],
+  huayan5: [
+    {
+      originalHref: assetPath("/charts/huayan5-light.jpg"),
+      filename: "华严宗系统传承表_浅色版_A4_600dpi.jpeg",
+      label: "浅色",
+      theme: "light",
+    },
+    {
+      originalHref: assetPath("/charts/huayan5-dark.jpg"),
+      filename: "华严宗系统传承表_深色版_A4_600dpi.jpeg",
+      label: "深色",
+      theme: "dark",
+    },
+  ],
   yixi: [
     {
-      originalHref: assetPath("/charts/yixi-original.jpg"),
-      filename: "一夕中道谱_原始参考.jpg",
-      label: "原稿",
+      originalHref: assetPath("/charts/yixi-light.jpg"),
+      filename: "一夕谱_浅色版_A4_600dpi.jpeg",
+      label: "浅色",
+      theme: "light",
+    },
+    {
+      originalHref: assetPath("/charts/yixi-dark.jpg"),
+      filename: "一夕谱_深色版_A4_600dpi.jpeg",
+      label: "深色",
+      theme: "dark",
     },
   ],
 };
@@ -170,6 +241,10 @@ const CHART_COPY_TEXT: Record<ChartId, string> = {
   atiyoga: ATI_COPY_TEXT,
   yixi: YIXI_COPY_TEXT,
   dzogchen4: DZOGCHEN4_COPY_TEXT,
+  tiantai: TIANTAI_COPY_TEXT,
+  dzogchen3: DZOGCHEN3_COPY_TEXT,
+  huayan: HUAYAN_COPY_TEXT,
+  huayan5: HUAYAN5_COPY_TEXT,
 };
 
 const CHARTS: Chart[] = CHART_DOCUMENTS.map((document) => ({
@@ -218,6 +293,23 @@ function isLayoutMode(value: string | null): value is YihuaLayoutMode {
 
 function isShareCancellation(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
+}
+
+function readLocalPreference(key: string) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalPreference(key: string, value: string) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Storage may be unavailable in private or restricted Safari contexts.
+    // The current session still works; only preference persistence is skipped.
+  }
 }
 
 function triggerImageDownload(href: string, filename: string) {
@@ -311,7 +403,21 @@ function ChartContent({
   if (chartId === "dzogchen4") {
     return <Dzogchen4Chart theme={theme} ready={ready} />;
   }
-  if (chartId === "yixi") return <YixiChart ready={ready} />;
+  if (chartId === "tiantai") {
+    return <TiantaiChart theme={theme} ready={ready} />;
+  }
+  if (chartId === "dzogchen3") {
+    return <Dzogchen3Chart theme={theme} ready={ready} />;
+  }
+  if (chartId === "huayan") {
+    return <HuayanChart theme={theme} ready={ready} />;
+  }
+  if (chartId === "huayan5") {
+    return <Huayan5Chart theme={theme} ready={ready} />;
+  }
+  if (chartId === "yixi") {
+    return <YixiChart theme={theme} ready={ready} />;
+  }
   return <YihuaChart theme={theme} layout={layout} ready={ready} />;
 }
 
@@ -359,8 +465,8 @@ export default function Home() {
     const layoutFromUrl = params.get("layout");
     const viewFromUrl = params.get("view");
     const scriptureFromUrl = params.get("scripture");
-    const storedTheme = window.localStorage.getItem("yixi-chart-theme");
-    const storedLayout = window.localStorage.getItem(LAYOUT_PREFERENCE_KEY);
+    const storedTheme = readLocalPreference("yixi-chart-theme");
+    const storedLayout = readLocalPreference(LAYOUT_PREFERENCE_KEY);
     const systemTheme: ChartTheme = window.matchMedia("(prefers-color-scheme: dark)")
       .matches
       ? "dark"
@@ -455,7 +561,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!preferencesReady) return;
-    window.localStorage.setItem("yixi-chart-theme", theme);
+    writeLocalPreference("yixi-chart-theme", theme);
     const url = new URL(window.location.href);
     url.searchParams.set("chart", chartId);
     url.searchParams.set("theme", theme);
@@ -763,7 +869,7 @@ export default function Home() {
   }
 
   function chooseLayout(nextLayoutMode: YihuaLayoutMode) {
-    window.localStorage.setItem(LAYOUT_PREFERENCE_KEY, nextLayoutMode);
+    writeLocalPreference(LAYOUT_PREFERENCE_KEY, nextLayoutMode);
     prepareView({ nextLayoutMode });
   }
 
@@ -861,7 +967,7 @@ export default function Home() {
     setCopyStatus("idle");
     setSaveStatus("idle");
     if (option.layout) {
-      window.localStorage.setItem(LAYOUT_PREFERENCE_KEY, option.layout);
+      writeLocalPreference(LAYOUT_PREFERENCE_KEY, option.layout);
     }
     prepareView({
       nextTheme: option.theme ?? theme,

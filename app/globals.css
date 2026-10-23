@@ -557,7 +557,11 @@ button:disabled {
 
 .chart-frame--yunmen,
 .chart-frame--atiyoga,
-.chart-frame--dzogchen4 {
+.chart-frame--dzogchen4,
+.chart-frame--tiantai,
+.chart-frame--dzogchen3,
+.chart-frame--huayan,
+.chart-frame--huayan5 {
   max-width: 1040px;
 }
 
@@ -628,13 +632,20 @@ button:disabled {
   max-width: 720px;
 }
 
-.facsimile-chart > img {
+.facsimile-chart > picture,
+.facsimile-chart > picture > img {
   position: absolute;
-  z-index: 0;
   inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+}
+
+.facsimile-chart > picture {
+  z-index: 0;
+}
+
+.facsimile-chart > picture > img {
   user-select: none;
   object-fit: contain;
   -webkit-user-drag: none;

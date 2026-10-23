@@ -2,7 +2,7 @@
   "schema_version": 1,
   "id": "yixi",
   "kind": "lineage_chart",
-  "title": "一夕中道谱",
+  "title": "一夕谱",
   "short_title": "一夕",
   "nodes": [
     {
@@ -162,25 +162,30 @@
   ],
   "layout": {
     "a4_orientation": "landscape",
+    "output": {
+      "light_a4": "04_一夕谱/output/一夕谱_浅色版_A4_600dpi.jpeg",
+      "dark_a4": "04_一夕谱/output/一夕谱_深色版_A4_600dpi.jpeg",
+      "original_reference": "04_一夕谱/input/一夕谱_原始参考.jpg"
+    },
     "node_hints": {
-      "direct_29": {"x": 210},
-      "direct_28": {"x": 363},
-      "direct_27": {"x": 516},
-      "yixi_yifa": {"x": 669},
-      "yixi_yixing": {"x": 822},
-      "yixi_yimeng": {"x": 975},
-      "yixi_yinian": {"x": 1129},
-      "yixi_yixin": {"x": 1282},
-      "yixi_yisheng": {"x": 1435},
-      "yixi_yining": {"x": 1588},
-      "yixi_yichun": {"x": 1741},
-      "yixi_yizheng": {"x": 1894},
-      "yixi_yide": {"x": 2047},
-      "yixi_yiqing": {"x": 2200},
-      "yixi_yiming": {"x": 2353},
-      "yixi_yizhen": {"x": 2507},
-      "yixi_yiru": {"x": 2660},
-      "yixi_yiren": {"x": 2813}
+      "direct_29": {"x": 190},
+      "direct_28": {"x": 374},
+      "direct_27": {"x": 558},
+      "yixi_yifa": {"x": 742},
+      "yixi_yixing": {"x": 926},
+      "yixi_yimeng": {"x": 1110},
+      "yixi_yinian": {"x": 1294},
+      "yixi_yixin": {"x": 1478},
+      "yixi_yisheng": {"x": 1662},
+      "yixi_yining": {"x": 1846},
+      "yixi_yichun": {"x": 2030},
+      "yixi_yizheng": {"x": 2214},
+      "yixi_yide": {"x": 2398},
+      "yixi_yiqing": {"x": 2582},
+      "yixi_yiming": {"x": 2766},
+      "yixi_yizhen": {"x": 2950},
+      "yixi_yiru": {"x": 3134},
+      "yixi_yiren": {"x": 3318}
     }
   }
 }

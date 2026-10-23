@@ -8,7 +8,17 @@ import {
 } from "../lib/chart-yaml.mjs";
 
 const WEB_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const CHART_IDS = ["yihua", "yunmen", "atiyoga", "yixi", "dzogchen4"];
+const CHART_IDS = [
+  "yihua",
+  "yunmen",
+  "atiyoga",
+  "yixi",
+  "dzogchen4",
+  "tiantai",
+  "dzogchen3",
+  "huayan",
+  "huayan5",
+];
 const SCRIPTURE_FILES = ["heart-sutra.json", "samantabhadra-ten-vows.json"];
 
 async function readJson(relativePath) {
@@ -46,6 +56,12 @@ function validateChart(document, expectedId) {
     assert.ok(Array.isArray(node.name.variants), `${node.id}: name variants`);
     assert.ok(Array.isArray(node.parents), `${node.id}: parents`);
     assert.ok(Array.isArray(node.tags), `${node.id}: tags`);
+    if (node.generation !== undefined) {
+      assert.ok(
+        Number.isInteger(node.generation) && node.generation > 0,
+        `${node.id}: generation`,
+      );
+    }
 
     for (const parent of node.parents) {
       assert.ok(
@@ -168,6 +184,26 @@ assert.match(dzogchen4Yaml, /名称: "大圆满传承系统表（其四）"/);
 assert.match(dzogchen4Yaml, /名称: "全知麦彭尊者"/);
 assert.match(dzogchen4Yaml, /华智仁波切/);
 assert.match(dzogchen4Yaml, /蒋扬钦哲旺波仁波切/);
+
+const dzogchen3Yaml = charts.get("dzogchen3").yaml;
+assert.match(dzogchen3Yaml, /名称: "大圆满传承系统表（其三）"/);
+assert.match(dzogchen3Yaml, /名称: "革玛燃匝尊者"/);
+assert.match(dzogchen3Yaml, /名称: "龙钦巴尊者"/);
+assert.match(dzogchen3Yaml, /名称: "让迥多杰尊者"/);
+
+const tiantaiYaml = charts.get("tiantai").yaml;
+assert.match(tiantaiYaml, /名称: "天台宗传承谱"/);
+assert.match(tiantaiYaml, /名称: "迹端大师"/);
+assert.match(tiantaiYaml, /名称: "倓虚大师"/);
+assert.match(tiantaiYaml, /名称: "禅定大师"/);
+assert.match(tiantaiYaml, /名称: "谛闲大师"\n    世代: 43/);
+assert.match(tiantaiYaml, /名称: "圆山大师"\n    世代: 45/);
+assert.doesNotMatch(tiantaiYaml, /宝静大师|淡虚大师|圆山长老|一夕参/);
+
+const huayan5Yaml = charts.get("huayan5").yaml;
+assert.match(huayan5Yaml, /名称: "华严宗系统传承表"/);
+assert.match(huayan5Yaml, /名称: "圭峰宗密大师"/);
+assert.match(huayan5Yaml, /荷泽殿军/);
 
 const scriptures = [];
 for (const filename of SCRIPTURE_FILES) {

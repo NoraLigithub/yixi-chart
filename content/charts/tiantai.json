@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "id": "tiantai",
+  "kind": "lineage_chart",
+  "title": "天台宗传承谱",
+  "short_title": "天台宗",
+  "nodes": [
+    {
+      "id": "jiduan",
+      "name": {"primary": "迹端大师", "variants": []},
+      "generation": 42,
+      "parents": [],
+      "tags": []
+    },
+    {
+      "id": "dixian",
+      "name": {"primary": "谛闲大师", "variants": []},
+      "generation": 43,
+      "parents": [
+        {"node_id": "jiduan", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    },
+    {
+      "id": "tanxu",
+      "name": {"primary": "倓虚大师", "variants": []},
+      "generation": 44,
+      "parents": [
+        {"node_id": "dixian", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    },
+    {
+      "id": "chanding",
+      "name": {"primary": "禅定大师", "variants": []},
+      "generation": 44,
+      "parents": [
+        {"node_id": "dixian", "relation": "lineage", "display_order": 2}
+      ],
+      "tags": []
+    },
+    {
+      "id": "yuanshan",
+      "name": {"primary": "圆山大师", "variants": []},
+      "generation": 45,
+      "parents": [
+        {"node_id": "tanxu", "relation": "lineage", "display_order": 1},
+        {"node_id": "chanding", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    }
+  ],
+  "groups": [],
+  "annotations": [
+    {
+      "kind": "source",
+      "placement": "footer",
+      "text": "吾师一夕中道口述于一夕讲堂"
+    },
+    {
+      "kind": "record",
+      "placement": "footer",
+      "text": "一夕一心、一夕一念、一夕真意笔记  2026年9月7日"
+    },
+    {
+      "kind": "credit",
+      "placement": "footer",
+      "text": "一夕真妙制作图谱"
+    }
+  ],
+  "layout": {
+    "a4_orientation": "portrait",
+    "output": {
+      "a4": "天台宗传承谱_浅色版_A4_600dpi.jpeg",
+      "a4_dark": "天台宗传承谱_深色版_A4_600dpi.jpeg",
+      "mobile": "天台宗传承谱_浅色版_手机预览_1860px.jpeg",
+      "mobile_dark": "天台宗传承谱_深色版_手机预览_1860px.jpeg"
+    },
+    "main_chain": ["jiduan", "dixian"],
+    "node_hints": {
+      "jiduan": {"x": 1200, "y": 547},
+      "dixian": {"x": 1200, "y": 914},
+      "tanxu": {"x": 720, "y": 1432},
+      "chanding": {"x": 1680, "y": 1432},
+      "yuanshan": {"x": 1200, "y": 1945}
+    }
+  }
+}

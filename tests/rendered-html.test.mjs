@@ -44,11 +44,15 @@ test("server-renders the static chart viewer", async () => {
   assert.match(html, /云门与丹法/);
   assert.match(html, /阿的瑜伽/);
   assert.match(html, /大圆满其四/);
+  assert.match(html, /天台宗/);
+  assert.match(html, /大圆满其三/);
+  assert.match(html, /华严宗/);
+  assert.match(html, /华严五祖/);
   assert.match(html, /id="library-tab-yixi"[^>]*>一夕<\/button>/);
   assert.doesNotMatch(html, /id="library-tab-yixi"[^>]*>一夕中道<\/button>/);
   assert.match(html, /典藏分类/);
   assert.match(html, /选择图谱/);
-  assert.match(html, /5 种/);
+  assert.match(html, /9 种/);
   assert.match(html, /2 部/);
   assert.doesNotMatch(html, /浏览内容/);
   assert.doesNotMatch(html, /选择内容/);
@@ -72,7 +76,15 @@ test("server-renders the static chart viewer", async () => {
   assert.match(html, /生年·六三八/);
   assert.match(html, /data-facsimile-html="true"/);
   assert.match(html, /data-image-ready="false"/);
-  assert.doesNotMatch(html, /<img\b/i);
+  assert.match(html, /<picture>/i);
+  assert.match(
+    html,
+    /<source[^>]+yihua-light-desktop\.preview-7b31f5fe07\.jpg 1x,[^>]+yihua-light-desktop\.jpg 2x/i,
+  );
+  assert.match(
+    html,
+    /<img[^>]+src="\/charts\/previews\/yihua-light-desktop\.preview-7b31f5fe07\.jpg"/i,
+  );
   assert.doesNotMatch(html, /facsimile-chart--mobile-long/);
   assert.match(html, /yihua-light-desktop\.jpg/);
   assert.doesNotMatch(html, /HTML 文字可复制/);
@@ -82,11 +94,20 @@ test("server-renders the static chart viewer", async () => {
     "atiyoga-light.jpg",
     "dzogchen4-dark.jpg",
     "dzogchen4-light.jpg",
+    "dzogchen3-dark.jpg",
+    "dzogchen3-light.jpg",
+    "huayan-dark.jpg",
+    "huayan-light.jpg",
+    "huayan5-dark.jpg",
+    "huayan5-light.jpg",
+    "tiantai-dark.jpg",
+    "tiantai-light.jpg",
     "yihua-dark-desktop.jpg",
     "yihua-dark-mobile.jpg",
     "yihua-light-desktop.jpg",
     "yihua-light-mobile.jpg",
-    "yixi-original.jpg",
+    "yixi-dark.jpg",
+    "yixi-light.jpg",
     "yunmen-dark.jpg",
     "yunmen-light.jpg",
   ];
@@ -208,7 +229,7 @@ test("server-renders the static chart viewer", async () => {
   );
   assert.ok(
     preferenceEffect.includes(
-      "window.localStorage.getItem(LAYOUT_PREFERENCE_KEY)",
+      "readLocalPreference(LAYOUT_PREFERENCE_KEY)",
     ),
   );
   assert.ok(preferenceEffect.includes(': "desktop",'));
@@ -216,7 +237,7 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(pageSource.includes('"yixi-chart-layout-choice"'));
   assert.ok(
     pageSource.includes(
-      "window.localStorage.setItem(LAYOUT_PREFERENCE_KEY, nextLayoutMode)",
+      "writeLocalPreference(LAYOUT_PREFERENCE_KEY, nextLayoutMode)",
     ),
   );
   assert.ok(pageSource.includes("chooseLayout(value)"));
@@ -245,7 +266,7 @@ test("server-renders the static chart viewer", async () => {
   }
   assert.ok(pageSource.includes('label: "浅色"'));
   assert.ok(pageSource.includes('label: "深色"'));
-  assert.ok(pageSource.includes('label: "原稿"'));
+  assert.ok(!pageSource.includes('label: "原稿"'));
   assert.ok(!pageSource.includes('["auto", "随屏"]'));
   assert.ok(pageSource.includes('["desktop", "横幅"]'));
   assert.ok(pageSource.includes('["mobile", "长卷"]'));
@@ -298,7 +319,7 @@ test("serves fingerprinted chart previews with a long browser cache", async () =
   let requestedPath = "";
   const response = await worker.fetch(
     new Request(
-      "http://localhost/chart-preview/yixi-original.preview-bd6a1780d1.jpg",
+      "http://localhost/chart-preview/yixi-light.preview-b8c36952e8.jpg",
     ),
     {
       ASSETS: {
@@ -316,7 +337,7 @@ test("serves fingerprinted chart previews with a long browser cache", async () =
   assert.equal(response.status, 200);
   assert.equal(
     requestedPath,
-    "/charts/previews/yixi-original.preview-bd6a1780d1.jpg",
+    "/charts/previews/yixi-light.preview-b8c36952e8.jpg",
   );
   assert.equal(
     response.headers.get("cache-control"),
@@ -330,7 +351,7 @@ test("redirects chart previews to static assets when the runtime environment is 
   const worker = await loadWorker();
   const response = await worker.fetch(
     new Request(
-      "http://localhost/chart-preview/yixi-original.preview-bd6a1780d1.jpg",
+      "http://localhost/chart-preview/yixi-light.preview-b8c36952e8.jpg",
     ),
     undefined,
     executionContext,
@@ -339,6 +360,6 @@ test("redirects chart previews to static assets when the runtime environment is 
   assert.equal(response.status, 307);
   assert.equal(
     response.headers.get("location"),
-    "http://localhost/charts/previews/yixi-original.preview-bd6a1780d1.jpg",
+    "http://localhost/charts/previews/yixi-light.preview-b8c36952e8.jpg",
   );
 });

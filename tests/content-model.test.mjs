@@ -62,3 +62,63 @@ test("human YAML preserves the two-parent Dzogchen convergence", async () => {
     { 人物: "蒋扬钦哲旺波仁波切", 关系: "传承" },
   ]);
 });
+
+test("human YAML preserves the proofread two-parent Tiantai convergence", async () => {
+  const document = await chart("tiantai");
+  const human = chartToHumanObject(document);
+  const yuanshan = human.人物.find((person) => person.名称 === "圆山大师");
+
+  assert.deepEqual(yuanshan.上承, [
+    { 人物: "倓虚大师", 关系: "传承" },
+    { 人物: "禅定大师", 关系: "传承" },
+  ]);
+  assert.ok(human.人物.some((person) => person.名称 === "迹端大师"));
+  assert.ok(human.人物.some((person) => person.名称 === "谛闲大师"));
+  assert.ok(!human.人物.some((person) => person.名称 === "宝静大师"));
+  assert.ok(!human.人物.some((person) => person.名称 === "圆山长老"));
+  assert.deepEqual(
+    Object.fromEntries(human.人物.map((person) => [person.名称, person.世代])),
+    {
+      迹端大师: 42,
+      谛闲大师: 43,
+      倓虚大师: 44,
+      禅定大师: 44,
+      圆山大师: 45,
+    },
+  );
+});
+
+test("human YAML preserves the three-person Huayan chain", async () => {
+  const document = await chart("huayan");
+  const human = chartToHumanObject(document);
+  assert.deepEqual(human.人物.map((person) => person.名称), [
+    "月霞大师",
+    "慈舟大师",
+    "梦参大师",
+  ]);
+  assert.deepEqual(human.人物.map((person) => person.上承), [
+    undefined,
+    "月霞大师",
+    "慈舟大师",
+  ]);
+  assert.ok(human.人物.every((person) => person.世代 === undefined));
+});
+
+test("human YAML preserves the separate five-person Huayan chain", async () => {
+  const human = chartToHumanObject(await chart("huayan5"));
+  assert.deepEqual(human.人物.map((person) => person.名称), [
+    "法顺大师",
+    "智俨大师",
+    "贤首大师",
+    "澄观大师",
+    "圭峰宗密大师",
+  ]);
+  assert.deepEqual(human.人物.map((person) => person.上承), [
+    undefined,
+    "法顺大师",
+    "智俨大师",
+    "贤首大师",
+    "澄观大师",
+  ]);
+  assert.ok(human.人物.every((person) => person.世代 === undefined));
+});

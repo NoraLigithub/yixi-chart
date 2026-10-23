@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "id": "huayan5",
+  "kind": "lineage_chart",
+  "title": "华严宗系统传承表",
+  "short_title": "华严五祖",
+  "nodes": [
+    {
+      "id": "fashun",
+      "name": {"primary": "法顺大师", "variants": []},
+      "parents": [],
+      "tags": []
+    },
+    {
+      "id": "zhiyan",
+      "name": {"primary": "智俨大师", "variants": []},
+      "parents": [
+        {"node_id": "fashun", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    },
+    {
+      "id": "xianshou",
+      "name": {"primary": "贤首大师", "variants": []},
+      "parents": [
+        {"node_id": "zhiyan", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    },
+    {
+      "id": "chengguan",
+      "name": {"primary": "澄观大师", "variants": []},
+      "parents": [
+        {"node_id": "xianshou", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    },
+    {
+      "id": "zongmi",
+      "name": {"primary": "圭峰宗密大师", "variants": []},
+      "parents": [
+        {"node_id": "chengguan", "relation": "lineage", "display_order": 1}
+      ],
+      "tags": []
+    }
+  ],
+  "groups": [],
+  "annotations": [
+    {
+      "kind": "editorial",
+      "node_id": "zongmi",
+      "placement": "below_node",
+      "text": "（荷泽殿军）"
+    },
+    {
+      "kind": "source",
+      "placement": "footer",
+      "text": "吾师一夕中道口述于一夕讲堂"
+    },
+    {
+      "kind": "record",
+      "placement": "footer",
+      "text": "一夕一心、一夕一念、一夕真意笔记  2026年10月19日"
+    },
+    {
+      "kind": "credit",
+      "placement": "footer",
+      "text": "一夕真妙制作图谱"
+    }
+  ],
+  "layout": {
+    "a4_orientation": "portrait",
+    "output": {
+      "a4": "华严宗系统传承表_浅色版_A4_600dpi.jpeg",
+      "a4_dark": "华严宗系统传承表_深色版_A4_600dpi.jpeg",
+      "mobile": "华严宗系统传承表_浅色版_手机预览_1860px.jpeg",
+      "mobile_dark": "华严宗系统传承表_深色版_手机预览_1860px.jpeg"
+    },
+    "main_chain": ["fashun", "zhiyan", "xianshou", "chengguan", "zongmi"],
+    "node_hints": {
+      "fashun": {"x": 1240, "y": 620},
+      "zhiyan": {"x": 1240, "y": 1020},
+      "xianshou": {"x": 1240, "y": 1420},
+      "chengguan": {"x": 1240, "y": 1820},
+      "zongmi": {"x": 1240, "y": 2220}
+    }
+  }
+}
