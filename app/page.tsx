@@ -93,6 +93,12 @@ function scriptureCopyText(scripture: (typeof SCRIPTURE_DOCUMENTS)[number]) {
 const DOWNLOADS: Record<ChartId, DownloadOption[]> = {
   yihua: [
     {
+      originalHref: assetPath("/charts/yihua-classic.jpg"),
+      filename: "一花五叶谱最终版.jpeg",
+      label: "早期最终版 · 原图 A4 300 DPI",
+      layout: "classic",
+    },
+    {
       originalHref: assetPath("/charts/yihua-light-desktop.jpg"),
       filename: "一花五叶谱_浅色版_A4_600dpi.jpeg",
       label: "浅色 · 横幅",
@@ -288,7 +294,7 @@ function isTheme(value: string | null): value is ChartTheme {
 }
 
 function isLayoutMode(value: string | null): value is YihuaLayoutMode {
-  return value === "desktop" || value === "mobile";
+  return value === "desktop" || value === "mobile" || value === "classic";
 }
 
 function isShareCancellation(error: unknown) {
@@ -1274,6 +1280,7 @@ export default function Home() {
                     [
                       ["desktop", "横幅"],
                       ["mobile", "长卷"],
+                      ["classic", "早期最终版"],
                     ] as const
                   ).map(([value, label]) => (
                     <button

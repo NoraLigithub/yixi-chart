@@ -27,7 +27,7 @@ export type ChartId =
   | "huayan"
   | "huayan5";
 export type ChartTheme = "light" | "dark";
-export type YihuaLayoutMode = "desktop" | "mobile";
+export type YihuaLayoutMode = "desktop" | "mobile" | "classic";
 export type YihuaResolvedLayout = YihuaLayoutMode;
 
 export type ChartImageSource = {
@@ -48,6 +48,7 @@ export function getChartImageSource(
   yihuaLayout: YihuaResolvedLayout,
 ): ChartImageSource {
   if (chartId === "yihua") {
+    if (yihuaLayout === "classic") return imageSource("yihua-classic");
     return imageSource(`yihua-${theme}-${yihuaLayout}`);
   }
   if (chartId === "yunmen") return imageSource(`yunmen-${theme}`);
@@ -155,7 +156,12 @@ function FacsimileChart({
           );
         })}
       </div>
-      <figcaption className="sr-only">{alt}。图中全部文字均可选择和复制。</figcaption>
+      <figcaption className="sr-only">
+        {alt}。
+        {spots.length > 0
+          ? "图中全部文字均可选择和复制。"
+          : "可使用上方复制按钮复制图谱内容。"}
+      </figcaption>
     </figure>
   );
 }
@@ -411,16 +417,21 @@ export function YihuaChart({
   ready?: boolean;
 }) {
   const isMobile = layout === "mobile";
+  const isClassic = layout === "classic";
 
   return (
     <FacsimileChart
       image={getChartImageSource("yihua", theme, layout)}
-      alt={`${YIHUA_DOCUMENT.title}${theme === "dark" ? "深色" : "浅色"}${
-        isMobile ? "手机版" : "电脑版"
-      }`}
+      alt={
+        isClassic
+          ? `${YIHUA_DOCUMENT.title}早期最终版`
+          : `${YIHUA_DOCUMENT.title}${theme === "dark" ? "深色" : "浅色"}${
+              isMobile ? "手机版" : "电脑版"
+            }`
+      }
       width={isMobile ? 1440 : 3508}
       height={isMobile ? 5680 : 2480}
-      spots={isMobile ? YIHUA_MOBILE_SPOTS : YIHUA_DESKTOP_SPOTS}
+      spots={isClassic ? [] : isMobile ? YIHUA_MOBILE_SPOTS : YIHUA_DESKTOP_SPOTS}
       desktopHighResolution={!isMobile}
       ready={ready}
       className={

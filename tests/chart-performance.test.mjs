@@ -15,6 +15,7 @@ const PREVIEWS = {
   "huayan5-light.jpg": "huayan5-light.preview-a515bd9248.jpg",
   "tiantai-dark.jpg": "tiantai-dark.preview-d4f97264cc.jpg",
   "tiantai-light.jpg": "tiantai-light.preview-4cb8695838.jpg",
+  "yihua-classic.jpg": "yihua-classic.preview-ef8547fd1f.jpg",
   "yihua-dark-desktop.jpg": "yihua-dark-desktop.preview-7bdc2f0ca3.jpg",
   "yihua-dark-mobile.jpg": "yihua-dark-mobile.preview-06070faaed.jpg",
   "yihua-light-desktop.jpg": "yihua-light-desktop.preview-7b31f5fe07.jpg",

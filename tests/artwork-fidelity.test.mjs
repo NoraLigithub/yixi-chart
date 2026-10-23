@@ -28,6 +28,8 @@ const EXPECTED_SHA256 = {
     "8260ea95de5ca1c6deb36b4bacc0c5ab0893d23c524118703d2f6801658cc7c7",
   "tiantai-light.jpg":
     "e702afcb5f9b5af469859a367735e03b133af01c097137b86740b7f251fc3689",
+  "yihua-classic.jpg":
+    "60c03906d5653f92c347d5173e0234bfacc1bbbe4a2b3b4c10d057ba3cea43af",
   "yihua-dark-desktop.jpg":
     "c50d592d0731587ea15df88a9e9ba4b8d58c4fc3e59ba76167e73cab9fef5266",
   "yihua-dark-mobile.jpg":

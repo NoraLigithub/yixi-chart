@@ -60,6 +60,7 @@ test("server-renders the static chart viewer", async () => {
   assert.doesNotMatch(html, /随屏幕自动选择图谱版式/);
   assert.match(html, /切换为横幅图谱/);
   assert.match(html, /切换为长卷图谱/);
+  assert.match(html, /切换为早期最终版图谱/);
   assert.match(html, /复制一花五叶谱完整内容/);
   assert.match(html, /将当前显示的一花五叶谱图片存到相册/);
   assert.match(html, />存到相册<\/span>/);
@@ -67,6 +68,7 @@ test("server-renders the static chart viewer", async () => {
   assert.match(html, /选择一花五叶谱显示与下载版本/);
   assert.match(html, /浅色 · 横幅/);
   assert.match(html, /深色 · 长卷/);
+  assert.match(html, /早期最终版 · 原图 A4 300 DPI/);
   assert.match(html, /切换为浅色模式/);
   assert.match(html, /切换为深色模式/);
   assert.match(html, /href="\/guide"[^>]*aria-label="查看使用说明"/);
@@ -102,6 +104,7 @@ test("server-renders the static chart viewer", async () => {
     "huayan5-light.jpg",
     "tiantai-dark.jpg",
     "tiantai-light.jpg",
+    "yihua-classic.jpg",
     "yihua-dark-desktop.jpg",
     "yihua-dark-mobile.jpg",
     "yihua-light-desktop.jpg",
@@ -270,6 +273,7 @@ test("server-renders the static chart viewer", async () => {
   assert.ok(!pageSource.includes('["auto", "随屏"]'));
   assert.ok(pageSource.includes('["desktop", "横幅"]'));
   assert.ok(pageSource.includes('["mobile", "长卷"]'));
+  assert.ok(pageSource.includes('["classic", "早期最终版"]'));
   assert.match(pageSource, /download=\{currentDownload\.filename\}/);
   assert.ok(pageSource.includes("chooseDownloadOption(option)"));
   assert.ok(pageSource.includes("nextTheme: option.theme ?? theme"));

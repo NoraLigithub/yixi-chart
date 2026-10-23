@@ -11,6 +11,7 @@ export const CHART_PREVIEWS = {
   "huayan5-light": "huayan5-light.preview-a515bd9248.jpg",
   "tiantai-dark": "tiantai-dark.preview-d4f97264cc.jpg",
   "tiantai-light": "tiantai-light.preview-4cb8695838.jpg",
+  "yihua-classic": "yihua-classic.preview-ef8547fd1f.jpg",
   "yihua-dark-desktop": "yihua-dark-desktop.preview-7bdc2f0ca3.jpg",
   "yihua-dark-mobile": "yihua-dark-mobile.preview-06070faaed.jpg",
   "yihua-light-desktop": "yihua-light-desktop.preview-7b31f5fe07.jpg",
