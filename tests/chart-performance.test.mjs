@@ -3,8 +3,8 @@ import { access, readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
 const PREVIEWS = {
-  "atiyoga-dark.jpg": "atiyoga-dark.preview-aca88a423d.jpg",
-  "atiyoga-light.jpg": "atiyoga-light.preview-de58ed054c.jpg",
+  "atiyoga-dark.jpg": "atiyoga-dark.preview-9f3c4cba98.jpg",
+  "atiyoga-light.jpg": "atiyoga-light.preview-c4a61294cb.jpg",
   "dzogchen4-dark.jpg": "dzogchen4-dark.preview-39fcbe0706.jpg",
   "dzogchen4-light.jpg": "dzogchen4-light.preview-9fc9724755.jpg",
   "dzogchen3-dark.jpg": "dzogchen3-dark.preview-ed44491270.jpg",

@@ -5,9 +5,9 @@ import test from "node:test";
 
 const EXPECTED_SHA256 = {
   "atiyoga-dark.jpg":
-    "739b848bc17cd447e3703a3407baa358ea27deda737e0f98fa70690b44065d43",
+    "69fb5ac6ed6ef6ab1142dfc64f3a850d2e2871b91fc49911fc068b239d97a692",
   "atiyoga-light.jpg":
-    "e4a4f1483c93b6d225710bec11b412ab7c0416c76f2869f12eae8a5971ce358e",
+    "775037c1875344c1bc43db20e664cb453c68045c454739c1a1adf0410e7fc364",
   "dzogchen4-dark.jpg":
     "43753df08e77863c29b78e42547782fb40c0b4504485ada18ceb0e6b8c503646",
   "dzogchen4-light.jpg":
