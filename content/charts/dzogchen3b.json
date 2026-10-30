@@ -2,8 +2,8 @@
   "schema_version": 1,
   "id": "dzogchen3b",
   "kind": "lineage_chart",
-  "title": "大圆满传承系统表其三（二）",
-  "short_title": "大圆满传承系统表其三（二）",
+  "title": "大圆满传承系统表（其三·二）",
+  "short_title": "大圆满传承系统表（其三·二）",
   "nodes": [
     {"id": "padmasambhava", "name": {"primary": "莲花生大师", "variants": []}, "parents": [], "tags": []},
     {"id": "kumaradza", "name": {"primary": "革玛燃匝尊者", "variants": []}, "parents": [], "tags": []},
